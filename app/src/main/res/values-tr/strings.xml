@@ -239,7 +239,7 @@
     <string name="text_networkServiceDiscovery">ASB\'yi etkinleştir</string>
     <string name="text_networkServiceDiscoverySummary">Ağ Servis Bulma bulunabilirliği güçlendirir</string>
     <string name="high_priority_notifications">Önemli bildirimler</string>
-    <string name="low_priority_notifications">Düşük öncelikli bildirimler</string>
+    <string name="low_priority_notifications">Düşük Öncelikli Bildirimler</string>
     <string name="receive_success_summary">%s, %s içerisinde alındı</string>
     <string name="count_years_short">%d yıl</string>
     <string name="count_months_short">%d ay</string>

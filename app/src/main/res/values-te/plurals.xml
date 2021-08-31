@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="albums">
+        <item quantity="one">%d ఆల్బమ్</item>
+        <item quantity="other">%d ఆల్బములు</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d పని</item>
+        <item quantity="other">%d పనులు</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">%d వస్తువు</item>
+        <item quantity="other">%d వస్తువులు</item>
+    </plurals>
+    <plurals name="minutes_ago">
+        <item quantity="one">ఒక నిమిషం క్రితం</item>
+        <item quantity="other">%d నిమిషాల క్రితం</item>
+    </plurals>
+    <plurals name="seconds_ago">
+        <item quantity="one">ఒక క్షణం క్రితం</item>
+        <item quantity="other">%d క్షణాల క్రితం</item>
+    </plurals>
+    <plurals name="files">
+        <item quantity="one">%d ఫైలు</item>
+        <item quantity="other">%d ఫైళ్లు</item>
+    </plurals>
+    <plurals name="receive_files_question">
+        <item quantity="one">ఈ ఫైల్‌ని స్వీకరించాలా\?</item>
+        <item quantity="other">%d ఫైళ్లు స్వీకరించాలా\?</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">%d ఫైల్ ఎంపిక చేయబడింది</item>
+        <item quantity="other">%d ఫైళ్లు ఎంపిక చేయబడ్డాయి</item>
+    </plurals>
+    <plurals name="receive_files_success_summary">
+        <item quantity="one">%d ఫై స్వీకరించబడింది</item>
+        <item quantity="other">%d ఫైళ్లు స్వీకరించబడ్డాయి</item>
+    </plurals>
+    <plurals name="delete_files_question">
+        <item quantity="one">మీరు ఈ ఫైల్‌ను తొలగించాలనుకుంటున్నారా\?</item>
+        <item quantity="other">మీరు %d ఫైళ్ళను తొలగించాలనుకుంటున్నారా\?</item>
+    </plurals>
+</resources>
