@@ -19,4 +19,5 @@
 
 <resources>
     <string name="package_name" translatable="false">com.genonbeta.TrebleShot.debug</string>
+    <string name="file_provider" translatable="false">org.monora.uprotocol.client.android.debug.fileprovider</string>
 </resources>
