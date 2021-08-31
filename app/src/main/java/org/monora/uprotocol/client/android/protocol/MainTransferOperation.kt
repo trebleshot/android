@@ -22,6 +22,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.runBlocking
 import org.monora.uprotocol.client.android.backend.Backend
+import org.monora.uprotocol.client.android.content.scan
 import org.monora.uprotocol.client.android.data.TransferRepository
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.io.DocumentFileStreamDescriptor
@@ -70,10 +71,13 @@ class MainTransferOperation(
         when {
             ongoing == null -> Log.d(TAG, "installReceivedContent: Ongoing item was empty!")
             descriptor is DocumentFileStreamDescriptor -> {
-                transferRepository.saveReceivedFile(transferParams.transfer, descriptor.documentFile, ongoing)
+                val savedFile = transferRepository.saveReceivedFile(
+                    transferParams.transfer, descriptor.documentFile, ongoing
+                )
                 if (ongoing is UTransferItem) runBlocking {
                     transferRepository.update(ongoing)
                 }
+                backend.services.mediaScannerConnection.scan(savedFile)
             }
             else -> Log.d(TAG, "installReceivedContent: Unknown descriptor type to save: $descriptor")
         }

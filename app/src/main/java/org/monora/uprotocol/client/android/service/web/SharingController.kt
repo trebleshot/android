@@ -44,6 +44,7 @@ import org.monora.uprotocol.client.android.content.App
 import org.monora.uprotocol.client.android.content.Image
 import org.monora.uprotocol.client.android.content.Song
 import org.monora.uprotocol.client.android.content.Video
+import org.monora.uprotocol.client.android.content.scan
 import org.monora.uprotocol.client.android.database.model.UTransferItem
 import org.monora.uprotocol.client.android.database.model.WebTransfer
 import org.monora.uprotocol.client.android.model.FileModel
@@ -185,6 +186,8 @@ class SharingController {
                 .setContentTitle(context.getString(R.string.received_using_web_share))
 
             notification.show()
+
+            services.mediaScannerConnection.scan(file)
         } catch (e: Exception) {
             file.delete(context)
         }

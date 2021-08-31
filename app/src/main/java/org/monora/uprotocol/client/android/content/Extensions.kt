@@ -18,7 +18,9 @@
 
 package org.monora.uprotocol.client.android.content
 
+import android.media.MediaScannerConnection
 import android.net.Uri
+import com.genonbeta.android.framework.io.DocumentFile
 
 /**
  * @See android.content.ContentUris#removeId
@@ -35,4 +37,11 @@ fun Uri.removeId(): Uri {
         builder.appendPath(segments[i])
     }
     return builder.build()
+}
+
+fun MediaScannerConnection.scan(documentFile: DocumentFile) {
+    val path = documentFile.filePath
+    if (path != null && isConnected) {
+        scanFile(path, documentFile.getType())
+    }
 }

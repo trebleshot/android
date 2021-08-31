@@ -19,6 +19,8 @@ package org.monora.uprotocol.client.android.backend
 
 import android.content.Context
 import android.content.Intent
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
@@ -51,6 +53,10 @@ class Services @Inject constructor(
     val isServingAnything
         get() = webDataRepository.isServing
 
+    private val mediaScannerConnectionClient = MediaScannerConnectionClient()
+
+    val mediaScannerConnection = MediaScannerConnection(context, mediaScannerConnectionClient)
+
     val notifications = Notifications(NotificationBackend(context))
 
     private var wifiLock: WifiManager.WifiLock? = null
@@ -61,6 +67,10 @@ class Services @Inject constructor(
     fun start() {
         val webServerRunning = webShareServer.isRunning
         val commServerRunning = transportSession.isListening
+
+        if (!mediaScannerConnection.isConnected) {
+            mediaScannerConnection.connect()
+        }
 
         if (webServerRunning && commServerRunning) {
             Log.d(TAG, "start: Services are already up")
@@ -94,6 +104,10 @@ class Services @Inject constructor(
     fun stop() {
         transportSession.runCatching {
             stop()
+        }
+
+        if (mediaScannerConnection.isConnected) {
+            mediaScannerConnection.disconnect()
         }
 
         wifiLock?.takeIf { it.isHeld }?.let {
@@ -132,6 +146,16 @@ class Services @Inject constructor(
             context.sendBroadcast(
                 Intent(ACTION_OREO_HOTSPOT_STARTED).putExtra(EXTRA_HOTSPOT_CONFIG, reservation.wifiConfiguration)
             )
+        }
+    }
+
+    private class MediaScannerConnectionClient : MediaScannerConnection.MediaScannerConnectionClient {
+        override fun onScanCompleted(path: String?, uri: Uri?) {
+            Log.d(TAG, "onScanCompleted: $path")
+        }
+
+        override fun onMediaScannerConnected() {
+            Log.d(TAG, "onMediaScannerConnected: Service connected")
         }
     }
 

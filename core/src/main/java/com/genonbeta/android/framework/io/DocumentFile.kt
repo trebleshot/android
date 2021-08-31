@@ -48,6 +48,9 @@ class DocumentFile private constructor(
     val parent: DocumentFile?
         get() = data?.parent ?: file?.parentFile?.let { DocumentFile(it) }
 
+    val filePath: String?
+        get() = file?.canonicalPath
+
     private constructor(originalUri: Uri, data: Data) : this(originalUri, data = data, file = null)
 
     private constructor(file: File) : this(Uri.fromFile(file), file = file, data = null)
