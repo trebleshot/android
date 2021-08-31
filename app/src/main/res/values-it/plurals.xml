@@ -48,4 +48,20 @@
         <item quantity="one">Condivisione singola</item>
         <item quantity="other">Condivisione con %d dispositivi</item>
     </plurals>
+    <plurals name="albums">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d album</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d operazione</item>
+        <item quantity="other">%d operazioni</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">%d elemento</item>
+        <item quantity="other">%d elementi</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">%d file selezionato</item>
+        <item quantity="other">%d file selezionati</item>
+    </plurals>
 </resources>

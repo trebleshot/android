@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="low_priority_notifications">Thông báo thứ cấp</string>
+    <string name="low_priority_notifications">Thông báo ưu tiên thấp</string>
     <string name="butn_mountDirectory">Mount thư mục</string>
     <string name="mesg_versionUpdatedChangelogRejected">Bạn có thể tìm mục \'Có gì mới\' trong khu \'Thông tin\'</string>
     <string name="close_navigation_drawer">Đóng ngăn điều hướng</string>
@@ -40,11 +40,11 @@
     <string name="mesg_mountDirectoryHelp">Chọn thư mục bạn muốn truy cập</string>
     <string name="butn_shareOnBrowser">Chia sẻ qua trình duyệt</string>
     <string name="show_system_apps_summary">Hiện ứng dụng hệ thống trong mục \"Chia sẻ\"</string>
-    <string name="ascending">Lớn trước ↑</string>
+    <string name="ascending">Lớn nhất trước ↑</string>
     <string name="remaining_time">Còn khoảng %s</string>
     <string name="storage_path">Đường dẫn lưu trữ</string>
     <string name="file">Tệp</string>
-    <string name="copy_here">Copy ở đây</string>
+    <string name="copy_here">Sao chép ở đây</string>
     <string name="text_checkOldFiles">Bạn có thể di chuyển tệp hoàn thành và chưa hoàn thành vào thư mục này và tuỳ theo dung lượng tệp có thể tốn chút thời gian</string>
     <string name="empty_transfers_list">Các lượt chuyển sẽ vào đây</string>
     <string name="text_default">Mặc định</string>
@@ -112,7 +112,7 @@
     <string name="app">Ứng dụng</string>
     <string name="donate">Hỗ trợ người phát triển</string>
     <string name="butn_useKnownDevice">Dùng thiết bị quen</string>
-    <string name="storage_permission">Quyền lưu trữ</string>
+    <string name="storage_permission">Quyền Bộ nhớ</string>
     <string name="text_allowingToConnectNotice">Cho phép kết nối từ thiết bị này</string>
     <string name="copy_text_to_clipboard_success">Đã sao chép văn bản vào bộ nhớ tạm</string>
     <string name="folder">Thư mục</string>
@@ -130,7 +130,7 @@
     <string name="transfer_details">Chi tiết</string>
     <string name="launch_app_failure">Không thể chạy ứng dụng</string>
     <string name="deleting_files_notice">Đang xoá các tệp đã chọn</string>
-    <string name="notification_settings">Tuỳ chọn thông báo</string>
+    <string name="notification_settings">Cài đặt thông báo</string>
     <string name="send_file_failure">Không thể gửi tệp. %s</string>
     <string name="receive_file_success">Đã nhận %s</string>
     <string name="receive_file_question">Nhận tệp\?</string>
@@ -161,7 +161,7 @@
     <string name="running">Đang chạy</string>
     <string name="set_up_hotspot_mobile_data_notice">Các thiết bị đang kết nối có thể đang dùng dữ liệu của bạn. Xin hãy cân nhắc tắt dữ liệu.</string>
     <string name="retry">Thử lại</string>
-    <string name="retry_receiving">Tiếp tục nhận</string>
+    <string name="retry_receiving">Thử nhận lại</string>
     <string name="mesg_formatNotSupported">Định dạng không được hỗ trợ</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone sẽ được khởi động theo</string>
     <string name="empty_text">(trống)</string>
@@ -191,7 +191,7 @@
     <string name="about">Giới thiệu</string>
     <string name="mesg_noInternetConnection">Cần kết nối mạng</string>
     <string name="text_applyDarkThemeSummary">Dùng chủ đề ban đêm</string>
-    <string name="starting_hotspot_notice">Đang tắt hotspot TrebleShot</string>
+    <string name="starting_hotspot_notice">Đang tắt hotspot</string>
     <string name="mesg_connectToWiFiNetworkHelp">Kết nối với mạng Wi-Fi để tiếp tục</string>
     <string name="show">Hiện</string>
     <string name="empty_search_result_summary">Không có kết quả nào cho \"%s\"</string>
@@ -286,13 +286,13 @@
     <string name="removal_success">Đã xoá</string>
     <string name="mesg_textShareLimit">Cùng một lúc chỉ chia sẻ được một văn bản</string>
     <string name="empty_photos_list">Không có hình</string>
-    <string name="share_with_other_apps">Chia sẻ với app khác</string>
+    <string name="share_with_other_apps">Chia sẻ với ứng dụng khác</string>
     <string name="text_deviceList">Thiết bị</string>
     <string name="mesg_errorNotSameNetwork">Các thiết bị không trên cùng một mạng</string>
     <string name="text_networkServiceDiscoverySummary">NSD giúp thiết bị dễ tìm hơn</string>
     <string name="help">Trợ giúp</string>
     <string name="nickname_description">Tên này sẽ hiện trên các thiết bị khác</string>
-    <string name="stopping_hotspot_notice">Đang bật hotspot TrebleShot</string>
+    <string name="stopping_hotspot_notice">Đang bật hotspot</string>
     <string name="text_communicationService">Dịch vụ liên lạc</string>
     <string name="butn_change">Thay đổi</string>
     <string name="butn_turnTrustZoneOn">Bật TrustZone</string>
@@ -316,7 +316,7 @@
     <string name="ques_connectionWizardUseHotspot">Bạn muốn thiết bị đầu kia kết nối với thiết bị này qua hotspot (tethering) không\? Nếu bạn không biết hotspot là gì, chọn Có.</string>
     <string name="third_party_libraries">Thư viện bên thứ ba</string>
     <string name="text_applyDarkTheme">Chế độ ban đêm</string>
-    <string name="descending">Nhỏ trước ↓</string>
+    <string name="descending">Nhỏ nhất trước ↓</string>
     <string name="cancel">Huỷ</string>
     <string name="mesg_connectionUpdated">Đang trao đổi qua mạng \"%s\"</string>
     <string name="introduction_personalize">Cá nhân hoá</string>
