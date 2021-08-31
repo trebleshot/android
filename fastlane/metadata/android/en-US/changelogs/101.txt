@@ -1,0 +1,34 @@
+What's new?
+* Support for Chinese (Simplified), Greek, Indonesian, Kannada, Lithuanian, Polish, Tamil, and Telugu languages
+* Switch to uprotocol content-sharing library
+* Categorize Music by Albums and Artists
+* Categorize Image and Video sections by folder
+* Categorize content in Web Share
+* Show all transfers in one place
+* Support for Android 10 and 11
+* Option to follow system theme
+* Encrypted connections
+* Show more detailed transfer status in the app
+* Send split APKs
+
+Fixes
+* Random connection failures when connecting
+* The service discovery issue on Android 4.3 and below
+* QR code won't work at times
+* Web Share file name and charset issues
+* Doesn't work even though Location Service is on
+* Crashes if sending too many files
+
+Improvements
+* Stop the app service when the user leaves the app and there is no ongoing task
+* Better app navigation
+* All tasks appear as a single notification
+* Drop Phone & Calls permission
+* Don't automatically save on content transfer attempts
+* Web Share is on by default when you are in the app
+* The quick-settings tile takes the user to the app on long-press
+* It is easier to use Web Share now
+
+Miscellaneous
+* Rewritten in Kotlin
+* Move to Android Architecture Components
