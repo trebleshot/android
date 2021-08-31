@@ -133,7 +133,11 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
         }
         val nonWritableWarning = Snackbar.make(
             floatingViewsContainer, R.string.folder_not_writable, Snackbar.LENGTH_INDEFINITE
-        )
+        ).apply {
+            if (Build.VERSION.SDK_INT >= 21) setAction(R.string.add_storage_access) {
+                addStorageAccess()
+            }
+        }
         val pathsPopupMenu = PopupMenu(requireContext(), pathSelectorButton).apply {
             MenuCompat.setGroupDividerEnabled(menu, true)
         }
@@ -201,7 +205,7 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
                 } else if (menuItem.groupId == R.id.locations_custom) {
                     viewModel.requestPath(it[menuItem.itemId])
                 } else if (menuItem.itemId == R.id.add_storage) {
-                    addAccess.launch(null)
+                    addStorageAccess()
                 } else if (menuItem.itemId == R.id.clear_storage_list) {
                     viewModel.clearStorageList()
                 } else {
@@ -266,6 +270,10 @@ class FilePickerFragment : Fragment(R.layout.layout_file_picker) {
         }
 
         return true
+    }
+
+    private fun addStorageAccess() {
+        addAccess.launch(null)
     }
 
     enum class SelectionType {
