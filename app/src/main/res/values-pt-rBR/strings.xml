@@ -26,8 +26,8 @@
     <string name="nickname_description">Este nome será exibido em outros dispositivos</string>
     <string name="text_deviceNameTitle">Forneça um nome para o dispositivo</string>
     <string name="mesg_formatNotSupported">Formato não suportado</string>
-    <string name="send_file_failure">Não foi possível enviar o arquivo. %s</string>
-    <string name="receive_file_failure">Não foi possível receber %s.</string>
+    <string name="send_file_failure">Não foi possível enviar \'%s\'</string>
+    <string name="receive_file_failure">Não foi possível receber \'%s\'</string>
     <string name="receive_files_success">Arquivos recebidos</string>
     <string name="text_deviceList">Dispositivos</string>
     <string name="text_fileOpenAppChoose">Abrir com</string>
@@ -128,7 +128,7 @@
     <string name="text_newVersionAvailable">Nova versão disponível!</string>
     <string name="butn_goUp">Ir para cima</string>
     <string name="folder">Pasta</string>
-    <string name="organizing_files_notice">Organizando seus arquivos</string>
+    <string name="organizing_files_notice">Organizando seus arquivos…</string>
     <string name="mesg_communicating">Comunicando</string>
     <string name="text_communicationService">Serviço de comunicação</string>
     <string name="text_chooserTargetService">Provedor de escolha do dispositivo</string>
@@ -239,7 +239,7 @@
     <string name="text_previewAndEditList">Visualizar e editar</string>
     <string name="text_uncheckedItemsNotice">Desmarque itens para removê-los</string>
     <string name="text_fileRoot">Raiz do arquivo</string>
-    <string name="client_not_supported_notice">Por favor, atualize para uma versão suportada e procure novamente os dispositivos.</string>
+    <string name="client_not_supported_notice">Este cliente usa uma versão que não é mais suportada!</string>
     <string name="mesg_connectionUpdated">Agora se comunicando pela conexão \"%s\"</string>
     <string name="mesg_ongoingUpdateDownload">Baixando a nova versão</string>
     <string name="butn_gotIt">Entendi</string>
@@ -279,7 +279,7 @@
     <string name="high_priority_notifications">Notificações importantes</string>
     <string name="low_priority_notifications">Notificações de baixa prioridade</string>
     <string name="receive_success_summary">Recebido %s em %s</string>
-    <string name="count_years_short">$d ano</string>
+    <string name="count_years_short">%d ano</string>
     <string name="count_months_short">%d mês</string>
     <string name="count_days_short">%d dia</string>
     <string name="count_hours_short">%d hora</string>
@@ -404,12 +404,12 @@
     <string name="turning_wifi_on_notice">Ligando o Wi-Fi</string>
     <string name="location_permission_required_notice">Ative primeiro o serviço de localização para continuar</string>
     <string name="mesg_connectToWiFiNetworkHelp">Conecte-se a uma rede Wi-Fi para continuar</string>
-    <string name="removing_notice">Removendo... Isso pode demorar muito</string>
+    <string name="removing_notice">Removendo…</string>
     <string name="help">Ajuda</string>
     <string name="choose">Escolher</string>
     <string name="butn_fixConnection">Corrigir conexão</string>
     <string name="never">Nunca</string>
-    <string name="externally_started_hotspot_notice">O ponto de acesso foi iniciado externamente. Para usar o código QR, você deve iniciá-lo aqui.</string>
+    <string name="externally_started_hotspot_notice">Um ponto de acesso iniciado externamente não pode ser gerenciado daqui</string>
     <string name="text_shortcut">Atalho</string>
     <string name="butn_addShortcut">Adicionar atalho</string>
     <string name="butn_removeShortcut">Remover atalho</string>
@@ -460,4 +460,6 @@
     <string name="mesg_qrScannerTextMode">Códigos QR serão mostrados como texto</string>
     <string name="mesg_qrScannerDefaultMode">Voltar para as ações padrão para códigos QR</string>
     <string name="show_as_qr_code">Mostrar como código QR</string>
+    <string name="remove_transfer_question">Remover transferência\?</string>
+    <string name="albums">Albuns</string>
 </resources>
