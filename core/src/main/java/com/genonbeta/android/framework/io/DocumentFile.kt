@@ -153,7 +153,9 @@ class DocumentFile private constructor(
 
     fun getUri(): Uri = data?.uri ?: originalUri
 
-    fun getType(): String = data?.type ?: file?.let { getMimeType(getName()) } ?: throw IllegalStateException()
+    fun getType(): String = data?.type ?: file?.let {
+        if (isDirectory() && Build.VERSION.SDK_INT >= 19) MIME_TYPE_DIR else getMimeType(getName())
+    } ?: throw IllegalStateException()
 
     fun listFiles(context: Context): Array<DocumentFile> {
         if (SDK_INT >= 21 && data != null) {

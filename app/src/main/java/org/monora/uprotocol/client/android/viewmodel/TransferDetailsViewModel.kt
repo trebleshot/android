@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.genonbeta.android.framework.io.DocumentFile
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -53,6 +54,10 @@ class TransferDetailsViewModel @AssistedInject internal constructor(
 
     val rejectionState = taskRepository.subscribeToTask {
         if (it.params is TransferRejectionParams && it.params.transfer.id == transfer.id) it.params else null
+    }
+
+    fun getTransferStorage(): DocumentFile {
+        return transferRepository.getTransferStorage(transfer)
     }
 
     fun remove() {

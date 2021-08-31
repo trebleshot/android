@@ -71,6 +71,8 @@ object Activities {
             Toast.makeText(context, R.string.error_no_activity_to_view, Toast.LENGTH_LONG).show()
         } catch (e: SecurityException) {
             Toast.makeText(context, R.string.error_content_not_found, Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show()
         }
     }
 }

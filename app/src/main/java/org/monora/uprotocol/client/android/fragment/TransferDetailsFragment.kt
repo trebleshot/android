@@ -24,11 +24,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.genonbeta.android.framework.util.Files
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.databinding.LayoutTransferDetailsBinding
 import org.monora.uprotocol.client.android.service.backgroundservice.Task
+import org.monora.uprotocol.client.android.util.Activities
 import org.monora.uprotocol.client.android.util.CommonErrors
 import org.monora.uprotocol.client.android.viewmodel.TransferDetailsViewModel
 import org.monora.uprotocol.client.android.viewmodel.TransferManagerViewModel
@@ -75,6 +77,11 @@ class TransferDetailsFragment : Fragment(R.layout.layout_transfer_details) {
         binding.rejectButton.setOnClickListener {
             val client = viewModel.client.value ?: return@setOnClickListener
             managerViewModel.rejectTransferRequest(args.transfer, client)
+        }
+        binding.openDirectoryButton.setOnClickListener {
+            viewModel.runCatching {
+                Activities.view(requireActivity(), viewModel.getTransferStorage())
+            }
         }
 
         viewModel.transferDetail.observe(viewLifecycleOwner) {
