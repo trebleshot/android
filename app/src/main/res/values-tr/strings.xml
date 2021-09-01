@@ -147,7 +147,7 @@
     <string name="text_automaticNetworkConnectionFailed">Hiçbir bağlantı cihaza ulaşmıyor. Bağlantı konumu değişmiş olabilir. TrebleShot açıkken ağa tekrar bağlanmayı deneyin.</string>
     <string name="text_automaticNetworkConnectionOngoing">En iyi bağlantıyı seçiyoruz</string>
     <string name="retry_receiving">Yeniden Almayı Dene</string>
-    <string name="ask">Sor</string>
+    <string name="request">Sor</string>
     <string name="text_permissionRequest">İzin isteği</string>
     <string name="storage_permission">Depolama İzni</string>
     <string name="text_requestPermissionReadPhoneState">Telefon durumunu oku</string>
@@ -513,7 +513,7 @@
     <string name="verify_client">İstemciyi Doğrula</string>
     <string name="matching_client_question">Aradığınız istemci bu mu\?</string>
     <string name="client_offline_notice">Uzak istemci kullanılabilir değil</string>
-    <string name="connecting_to_client">İstemciye Bağlanıyor</string>
+    <string name="connect_to_client">İstemciye Bağlanıyor</string>
     <string name="write_system_settings_permission_required_notice">Sistem ayarlarını düzenlemek için izne ihtiyaç var</string>
     <string name="wifi_disabled_notice">Kablosuz Ağlar devre dışı</string>
     <string name="location_service_disabled_notice">Konum Servisi kapalı</string>

@@ -236,7 +236,7 @@
     <string name="text_checkOldFiles">Вы можете переместить связанные файлы в эту папку, в том числе частично загруженные, что может занять некоторое время</string>
     <string name="preparing_files">Подготовка файлов</string>
     <string name="text_automaticNetworkConnectionFailed">Подключение не удалось. Адрес устройства мог измениться. Попробуйте переподключиться к сети, пока TrebleShot открыт.</string>
-    <string name="ask">Запросить</string>
+    <string name="request">Запросить</string>
     <string name="text_permissionRequest">Запрос разрешений</string>
     <string name="media_directory">Медиа</string>
     <string name="text_usedConnection">Используемое соединение</string>

@@ -90,7 +90,7 @@
     <string name="text_shareTextShort">உரை</string>
     <string name="butn_connectionList">இணைப்புகள்</string>
     <string name="retry_receiving">பெறுவதை மீண்டும் முயற்சிக்கவும்</string>
-    <string name="ask">கேள்</string>
+    <string name="request">கேள்</string>
     <string name="text_permissionRequest">அனுமதி கோரிக்கை</string>
     <string name="storage_permission">சேமிப்பு அனுமதி</string>
     <string name="text_requestPermissionReadPhoneState">தொலைபேசி நிலையை படிக்க அனுமதி</string>

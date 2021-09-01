@@ -62,7 +62,6 @@ import org.monora.android.codescanner.CodeScanner
 import org.monora.uprotocol.client.android.NavPickClientDirections
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.Keyword
-import org.monora.uprotocol.client.android.database.model.SharedText
 import org.monora.uprotocol.client.android.databinding.LayoutBarcodeScannerBinding
 import org.monora.uprotocol.client.android.model.NetworkDescription
 import org.monora.uprotocol.client.android.util.Activities
@@ -184,7 +183,7 @@ class BarcodeScannerFragment : Fragment(R.layout.layout_barcode_scanner) {
                 if (!it.camera) {
                     stateImage.set(R.drawable.ic_camera_white_144dp)
                     stateText.set(getString(R.string.camera_permission_notice))
-                    stateButtonText.set(getString(R.string.ask))
+                    stateButtonText.set(getString(R.string.request))
                 } else if (!it.location) {
                     stateImage.set(R.drawable.ic_round_location_off_144)
 

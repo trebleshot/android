@@ -157,7 +157,7 @@
     <string name="butn_connectionList">Connexions</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot décidera pour vous</string>
     <string name="retry_receiving">Tout réessayer</string>
-    <string name="ask">Demander</string>
+    <string name="request">Demander</string>
     <string name="text_permissionRequest">Demande de permission</string>
     <string name="storage_permission">Autorisation de stockage</string>
     <string name="text_requestPermissionReadPhoneState">Autorisation de lire l’état du téléphone</string>

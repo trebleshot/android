@@ -210,7 +210,7 @@
     <string name="text_automaticNetworkConnectionFailed">Alle verbindingen zijn mislukt; mogelijk is het adres gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot zal voor jou beslissen</string>
     <string name="retry_receiving">Alles opnieuw proberen</string>
-    <string name="ask">Vragen</string>
+    <string name="request">Vragen</string>
     <string name="text_permissionRequest">Machtigingsverzoek</string>
     <string name="storage_permission">Opslagrecht</string>
     <string name="text_requestPermissionReadPhoneState">Machtiging om telefoonstatus uit te lezen</string>
@@ -652,6 +652,6 @@
     <string name="verify_client">Client goedkeuren</string>
     <string name="matching_client_question">Is dit de client die je bedoelde\?</string>
     <string name="client_offline_notice">De externe client is niet beschikbaar</string>
-    <string name="connecting_to_client">Bezig met verbinden met client…</string>
+    <string name="connect_to_client">Bezig met verbinden met client…</string>
     <string name="write_system_settings_permission_required_notice">Niet bevoegd om de systeeminstellingen aan te passen</string>
 </resources>

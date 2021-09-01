@@ -24,7 +24,7 @@
     <string name="butn_downloadAllAsZip">ZIP ആയി ഡൗൺലോഡ് ചെയ്യുക ( compress ചെയ്യാതെ )</string>
     <string name="butn_changeMode">മോഡ് മാറ്റുക</string>
     <string name="file">ഫയൽ</string>
-    <string name="ask">ചോദിക്കുക</string>
+    <string name="request">ചോദിക്കുക</string>
     <string name="mesg_connectionFailure">കണക്ഷൻ റദ്ദായി</string>
     <string name="close_navigation_drawer">നാവിഗേഷൻ ഡ്രോയർ അടക്കുക</string>
     <string name="notifications_use_sounds">ശബ്ദങ്ങള്‍</string>

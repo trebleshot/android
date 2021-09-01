@@ -201,7 +201,7 @@
     <string name="text_requestPermissionReadPhoneState">ಫೋನ್ ಸ್ಥಿತಿಯನ್ನು ಓದಲು ಅನುಮತಿ</string>
     <string name="storage_permission">ಸಂಗ್ರಹಣೆ ಅನುಮತಿ</string>
     <string name="text_permissionRequest">ಅನುಮತಿ ವಿನಂತಿ</string>
-    <string name="ask">ಕೇಳಿ</string>
+    <string name="request">ಕೇಳಿ</string>
     <string name="retry_receiving">ಸ್ವೀಕರಿಸುವಿಕೆಯನ್ನು ಮರುಪ್ರಯತ್ನಿಸಿ</string>
     <string name="text_automaticNetworkConnectionOngoing">ಉತ್ತಮ ಸಂಪರ್ಕವನ್ನು ಆರಿಸಲಾಗುತ್ತಿದೆ</string>
     <string name="text_automaticNetworkConnectionFailed">ಸಾಧನವನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಅದರ ವಿಳಾಸ ಬದಲಾಗಿರಬಹುದು. TrebleShot ತೆರೆದಿರುವಾಗ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಮರುಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</string>

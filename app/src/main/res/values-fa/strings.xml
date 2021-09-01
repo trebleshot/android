@@ -175,7 +175,7 @@
     <string name="butn_connectionList">اتصالات</string>
     <string name="text_automaticNetworkConnectionOngoing">برنامه برای شما تصمیم خواهد گرفت</string>
     <string name="retry_receiving">تلاش مجدد برای همه</string>
-    <string name="ask">سوال بپرس</string>
+    <string name="request">سوال بپرس</string>
     <string name="text_permissionRequest">درخواست مجوز</string>
     <string name="storage_permission">مجوز ذخیره سازی</string>
     <string name="text_requestPermissionReadPhoneState">مجوز برای خواندن وضعیت تلفن</string>

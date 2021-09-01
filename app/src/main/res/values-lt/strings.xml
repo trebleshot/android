@@ -181,7 +181,7 @@
     <string name="verify_client">Tikrinti klientą</string>
     <string name="matching_client_question">Ar tai klientas, kurio ieškote\?</string>
     <string name="client_offline_notice">Nutolęs klientas nepasiekiamas</string>
-    <string name="connecting_to_client">Prisijungiama prie kliento</string>
+    <string name="connect_to_client">Prisijungiama prie kliento</string>
     <string name="write_system_settings_permission_required_notice">Reikalingas leidimas keisti sistemos nustatymus</string>
     <string name="wifi_disabled_notice">Wi-Fi išjungtas</string>
     <string name="location_service_disabled_notice">Vietos nustatymo paslauga išjungta</string>
@@ -361,7 +361,7 @@
     <string name="insufficient_space_notice">Nepakanka vietos</string>
     <string name="media_directory">Medijos katalogas</string>
     <string name="storage_permission">Saugyklos leidimas</string>
-    <string name="ask">Klausti</string>
+    <string name="request">Klausti</string>
     <string name="retry_receiving">Pakartoti gavimą</string>
     <string name="unknown_interface">Nežinomas ryšys</string>
     <string name="bluetooth">Bluetooth</string>

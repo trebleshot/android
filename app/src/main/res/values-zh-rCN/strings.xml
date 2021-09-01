@@ -208,7 +208,7 @@
     <string name="camera_permission_notice">需要相机权限</string>
     <string name="file">文件</string>
     <string name="text_transactionViewer">查看传输</string>
-    <string name="ask">请求权限</string>
+    <string name="request">请求权限</string>
     <string name="text_usedConnection">使用过的连接</string>
     <string name="removed">已移除</string>
     <string name="copy_to_clipboard">复制到剪贴板</string>

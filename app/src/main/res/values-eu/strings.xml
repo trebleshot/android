@@ -185,7 +185,7 @@
     <string name="text_automaticNetworkConnectionFailed">Ez du konexioetako bat bera ere funtzionatu gailu honentzat. Agian helbiea aldatu da. Saiatu berriro konektatzen sarera TrebleShot irekita dagoela.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot-ek hartuko du erabakia zure izenean</string>
     <string name="retry_receiving">Saiatu berriro dena</string>
-    <string name="ask">Galdetu</string>
+    <string name="request">Galdetu</string>
     <string name="text_permissionRequest">Baimen eskaera</string>
     <string name="storage_permission">Biltegiratze baimena</string>
     <string name="text_requestPermissionReadPhoneState">Telefonoaren egoera irakurtzeko baimena</string>

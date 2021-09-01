@@ -172,7 +172,7 @@
     <string name="text_automaticNetworkConnectionFailed">Tidak dapat terhubung ke perangkat. Alamat mungkin sudah berubah. Coba hubungkan ke jaringan saat TrebleShot dibuka.</string>
     <string name="text_automaticNetworkConnectionOngoing">Memilih koneksi terbaik</string>
     <string name="retry_receiving">Coba terima lagi</string>
-    <string name="ask">Tanyakan</string>
+    <string name="request">Tanyakan</string>
     <string name="text_permissionRequest">Permintaan Izin</string>
     <string name="storage_permission">Izin penyimpanan</string>
     <string name="text_requestPermissionReadPhoneState">Izin untuk membaca status ponsel</string>

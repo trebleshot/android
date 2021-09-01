@@ -187,7 +187,7 @@
     <string name="text_automaticNetworkConnectionFailed">Impossibile connettere il dispositivo. Il suo indirizzo può essere cambiato. Provare a riconnettersi alla rete mentre TrebleShot è aperto.</string>
     <string name="text_automaticNetworkConnectionOngoing">Scelta della migliore connessione</string>
     <string name="retry_receiving">Riprova a Ricevere</string>
-    <string name="ask">Chiedi</string>
+    <string name="request">Chiedi</string>
     <string name="text_permissionRequest">Richiesta Autorizzazione</string>
     <string name="storage_permission">Autorizzazione Archiviazione</string>
     <string name="text_requestPermissionReadPhoneState">Autorizzazione di leggere lo stato del telefono</string>
@@ -563,7 +563,7 @@
     <string name="verify_client">Verifica Client</string>
     <string name="matching_client_question">È questo il client che stai cercando\?</string>
     <string name="client_offline_notice">Il client remoto non è disponibile</string>
-    <string name="connecting_to_client">Connessione al Client</string>
+    <string name="connect_to_client">Connessione al Client</string>
     <string name="write_system_settings_permission_required_notice">È necessaria l\'autorizzazione per modificare le impostazioni di sistema</string>
     <string name="wifi_disabled_notice">La Wi-Fi è disattivata</string>
     <string name="location_service_disabled_notice">Il Servizio di Localizzazione è disattivato</string>

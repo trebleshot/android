@@ -58,7 +58,7 @@
     <string name="verify_client">క్లయింట్‌ని ధృవీకరించండి</string>
     <string name="matching_client_question">మీరు వెతుకుతున్న క్లయింట్ ఇదేనా\?</string>
     <string name="client_offline_notice">రిమోట్ క్లయింట్ అందుబాటులో లేదు</string>
-    <string name="connecting_to_client">క్లయింట్‌కి కనెక్ట్ అవుతోంది</string>
+    <string name="connect_to_client">క్లయింట్‌కి కనెక్ట్ అవుతోంది</string>
     <string name="write_system_settings_permission_required_notice">సిస్టమ్ సెట్టింగ్‌లను సవరించడానికి అనుమతి అవసరం</string>
     <string name="wifi_disabled_notice">వైఫై నిలిపివేయబడింది</string>
     <string name="location_service_disabled_notice">స్థాన సేవ నిలిపివేయబడింది</string>
@@ -253,7 +253,7 @@
     <string name="insufficient_space_notice">తగినంత ఖాళీ స్థలం లేదు</string>
     <string name="media_directory">మీడియా ఫొల్డర్</string>
     <string name="storage_permission">నిల్వ అనుమతి</string>
-    <string name="ask">అడగు</string>
+    <string name="request">అడగు</string>
     <string name="retry_receiving">స్వీకరించటాన్ని మళ్లీ ప్రయత్నించు</string>
     <string name="unknown_interface">తెలియని కనెక్షన్</string>
     <string name="ethernet">ఈథర్నెట్</string>

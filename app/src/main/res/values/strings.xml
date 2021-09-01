@@ -121,7 +121,7 @@
     <string name="ethernet">Ethernet</string>
     <string name="unknown_interface">Unknown Connection</string>
     <string name="retry_receiving">Retry Receiving</string>
-    <string name="ask">Request</string>
+    <string name="request">Request</string>
     <string name="storage_permission">Storage Permission</string>
     <string name="media_directory">Media Directory</string>
     <string name="insufficient_space_notice">Not enough space</string>
@@ -324,7 +324,7 @@
     <string name="location_service_disabled_notice">Location service off</string>
     <string name="wifi_disabled_notice">Wi-Fi off</string>
     <string name="write_system_settings_permission_required_notice">Needs permission to modify system settings</string>
-    <string name="connecting_to_client">Connect to Client</string>
+    <string name="connect_to_client">Connect to Client</string>
     <string name="client_offline_notice">The remote is unavailable</string>
     <string name="matching_client_question">Is this the client you are looking for?</string>
     <string name="verify_client">Verify Client</string>

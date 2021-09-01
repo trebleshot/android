@@ -188,7 +188,7 @@
     <string name="text_automaticNetworkConnectionFailed">لم تعمل أيا من الاتصالات لهذا لجهاز. ربما تم تغيير عنوان الجهاز الخاص به. حاول إعادة الاتصال بشبكة الاتصال أثناء فتح تريبليشوت.</string>
     <string name="text_automaticNetworkConnectionOngoing">سوف يقرر تريبليشوت لك</string>
     <string name="retry_receiving">إعادة محاولة التلقي</string>
-    <string name="ask">اسأل</string>
+    <string name="request">اسأل</string>
     <string name="text_permissionRequest">طلب الإذن</string>
     <string name="storage_permission">إذن التخزين</string>
     <string name="text_requestPermissionReadPhoneState">إذن لقراءة حالة الهاتف</string>

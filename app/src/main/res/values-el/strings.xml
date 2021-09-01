@@ -96,7 +96,7 @@
     <string name="copy_to_clipboard">Αντιγραφή στο πρόχειρο</string>
     <string name="removed">Αφαιρέθηκε</string>
     <string name="storage_permission">Άδεια αποθήκευσης</string>
-    <string name="ask">Ρωτήστε</string>
+    <string name="request">Ρωτήστε</string>
     <string name="butn_connectionList">Συνδέσεις</string>
     <string name="text_shareTextShort">Κείμενο</string>
     <string name="ethernet">Ethernet</string>

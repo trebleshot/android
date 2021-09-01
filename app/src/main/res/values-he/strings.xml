@@ -185,7 +185,7 @@
     <string name="text_automaticNetworkConnectionFailed">אף אחד מהחיבורים לא הצליח עבור ההתקן. יכול להיות שהכתובת שלו השתנתה. כדאי לנסות להתחבר מחדש לרשת בזמן ש־TrebleShot פתוח.</string>
     <string name="text_automaticNetworkConnectionOngoing">ההחלטה תתקבל על ידי TrebleShot</string>
     <string name="retry_receiving">לנסות לקבל שוב</string>
-    <string name="ask">לשאול</string>
+    <string name="request">לשאול</string>
     <string name="text_permissionRequest">בקשת הרשאות</string>
     <string name="storage_permission">הרשאה לאחסון</string>
     <string name="text_requestPermissionReadPhoneState">הרשאה לקרוא את מצב הטלפון</string>
@@ -553,7 +553,7 @@
     <string name="verify_client">אימות לקוח</string>
     <string name="matching_client_question">זה הלקוח המבוקש\?</string>
     <string name="client_offline_notice">הצד המרוחק אינו זמין</string>
-    <string name="connecting_to_client">מתבצעת התחברות ללקוח</string>
+    <string name="connect_to_client">מתבצעת התחברות ללקוח</string>
     <string name="write_system_settings_permission_required_notice">נדרשת הרשאה לשינוי הגדרות המערכת</string>
     <string name="wifi_disabled_notice">הרשת האלחוטית מושבתת</string>
     <string name="location_service_disabled_notice">שירות המיקום כבוי</string>

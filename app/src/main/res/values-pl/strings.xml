@@ -185,7 +185,7 @@
     <string name="text_automaticNetworkConnectionFailed">Żadne z połączeń nie działało na urządzenie. Jego adres mógł się zmienić. Spróbuj ponownie połączyć się z siecią, gdy otwarty jest TrebleShot.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot zadecyduje za Ciebie</string>
     <string name="retry_receiving">Spróbuj ponownie</string>
-    <string name="ask">Zapytaj</string>
+    <string name="request">Zapytaj</string>
     <string name="text_permissionRequest">Prośba o pozwolenie</string>
     <string name="storage_permission">Uprawnienia do przechowywania</string>
     <string name="text_requestPermissionReadPhoneState">Zezwolenie na odczyt stanu telefonu</string>

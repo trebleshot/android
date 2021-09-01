@@ -185,7 +185,7 @@
     <string name="text_automaticNetworkConnectionFailed">ninguna de las conexiones funcionó para el dispositivo. Su dirección pudo haber cambiado. Intente conectarse de nuevo a la red mientras TrebleShot está ejecutándose.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot decidirá por usted</string>
     <string name="retry_receiving">Re intentar todo</string>
-    <string name="ask">Preguntar</string>
+    <string name="request">Preguntar</string>
     <string name="text_permissionRequest">Solicitud de permiso</string>
     <string name="storage_permission">Permiso de almacenamiento</string>
     <string name="text_requestPermissionReadPhoneState">Permiso para leer el estado del teléfono</string>

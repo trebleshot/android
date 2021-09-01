@@ -97,7 +97,7 @@
     <string name="received_size">Dung lượng đã nhận</string>
     <string name="accept">Chấp nhận</string>
     <string name="select_all">Chọn tất cả</string>
-    <string name="ask">Hỏi</string>
+    <string name="request">Hỏi</string>
     <string name="butn_changeSavePath">Thay đổi nơi lưu file</string>
     <string name="preparing_files">Đang chuẩn bị tệp</string>
     <string name="text_scanQRCodeHelp">Quét mã QR trên màn hình của thiết bị chủ</string>
@@ -538,7 +538,7 @@
     <string name="verify_client">Xác minh máy khách</string>
     <string name="matching_client_question">Đây có phải là máy khách bạn đang tìm không\?</string>
     <string name="client_offline_notice">Máy trên mạng không có sẵn</string>
-    <string name="connecting_to_client">Đang kết nối đến máy khách</string>
+    <string name="connect_to_client">Đang kết nối đến máy khách</string>
     <string name="write_system_settings_permission_required_notice">Cần quyền sửa đổi cài đặt hệ thống</string>
     <string name="wifi_disabled_notice">Wi-Fi bị tắt</string>
     <string name="location_service_disabled_notice">Dịch vụ Vị trí bị tắt</string>

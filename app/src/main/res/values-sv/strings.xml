@@ -178,7 +178,7 @@
     <string name="text_automaticNetworkConnectionFailed">Ingen av anslutningarna fungerade för enheten. Kanske har adressen ändrat sig. Prova att återansluta medans TrebleShot är öppen.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot kommer att välja åt dig</string>
     <string name="retry_receiving">Försök igen med alla</string>
-    <string name="ask">Fråga</string>
+    <string name="request">Fråga</string>
     <string name="text_permissionRequest">Behörighetsförfrågan</string>
     <string name="storage_permission">Lagrigsbehörighet</string>
     <string name="text_requestPermissionReadPhoneState">Behörighet att läsa telefonstatus</string>

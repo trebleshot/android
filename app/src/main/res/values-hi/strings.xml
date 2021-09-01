@@ -169,7 +169,7 @@
     <string name="text_requestPermissionReadPhoneState">फोन की स्थिति पढ़ने की अनुमति</string>
     <string name="storage_permission">भंडारण की अनुमति</string>
     <string name="text_permissionRequest">अनुमति के लिए अनुरोध है</string>
-    <string name="ask">पूछिए</string>
+    <string name="request">पूछिए</string>
     <string name="retry_receiving">पुनः प्राप्त करने का प्रयास करें</string>
     <string name="text_automaticNetworkConnectionOngoing">सबसे अच्छा संपर्क माध्यम चुना जा रहा है</string>
     <string name="text_automaticNetworkConnectionFailed">यन्त्र से सम्बंध स्थापित नहीं हो पा रहा है। शायद यन्त्र का पता बदल गया होगा। ट्रेबलशॉट के खुला रहते नेटवर्क से पुनः संपर्क स्थापित करने का प्रयास करें।</string>

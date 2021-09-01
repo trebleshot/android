@@ -183,7 +183,7 @@
     <string name="text_automaticNetworkConnectionFailed">這個裝置沒有可用的連線。它的地址可能已經變更。請在 TrebleShot 開啟的時候重新連線到網路。</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot 將會為您決定</string>
     <string name="retry_receiving">全部重試</string>
-    <string name="ask">詢問</string>
+    <string name="request">詢問</string>
     <string name="text_permissionRequest">權限請求</string>
     <string name="storage_permission">儲存空間權限</string>
     <string name="text_requestPermissionReadPhoneState">讀取手機狀態權限</string>

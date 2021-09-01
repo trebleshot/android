@@ -36,7 +36,7 @@
     <string name="text_requestPermissionReadPhoneState">ဖုန်းအခြေအနေ ဖတ်ရန် ခွင့်ပြုချက်</string>
     <string name="storage_permission">ဖိုင်သိမ်းဆည်းခန်း ခွင့်ပြုချက်</string>
     <string name="text_permissionRequest">ခွင့်တောင်းခံမှု</string>
-    <string name="ask">ခွင့်တောင်းမည်</string>
+    <string name="request">ခွင့်တောင်းမည်</string>
     <string name="retry_receiving">ပြန်လည်ရယူမည်</string>
     <string name="text_automaticNetworkConnectionOngoing">အကောင်းဆုံး connection ကို ရွေးချယ်နေသည်</string>
     <string name="text_automaticNetworkConnectionFailed">စက်ကို ချိတ်ဆက်၍ မရပါ။ ၎င်း၏ IP လိပ်စာ ပြောင်းလဲသွားခြင်း ဖြစ်ကောင်းဖြစ်နိုင်သည်။TrebleShot ဖွင့်ထားစဉ် ထပ်မံချိတ်ဆက်ကြည့်ပါ။.</string>

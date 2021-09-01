@@ -210,7 +210,7 @@
     <string name="text_automaticNetworkConnectionFailed">Ingen av tilkoblingene fungerte for enheten. Dens adresse kan ha endret seg. Prøv å koble til nettverket mens TrebleShot er åpent.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot vil avgjøre for deg</string>
     <string name="retry_receiving">Prøv alle på nytt</string>
-    <string name="ask">Spør</string>
+    <string name="request">Spør</string>
     <string name="text_permissionRequest">Tilgangsforespørsel</string>
     <string name="storage_permission">Lagringstilgang</string>
     <string name="text_requestPermissionReadPhoneState">Tilgang til lesing av telefontilstand</string>

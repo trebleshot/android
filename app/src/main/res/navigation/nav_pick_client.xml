@@ -138,7 +138,7 @@
     <fragment
         android:id="@+id/clientConnectionFragment"
         android:name="org.monora.uprotocol.client.android.fragment.pickclient.ClientConnectionFragment"
-        android:label="@string/connecting_to_client">
+        android:label="@string/connect_to_client">
         <argument
             android:name="client"
             app:argType="org.monora.uprotocol.client.android.database.model.UClient" />

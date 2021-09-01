@@ -192,7 +192,7 @@
     <string name="text_automaticNetworkConnectionFailed">Não foi possível conectar o dispositivo. O endereço pode ter mudado. Tente se reconectar à rede enquanto o TrebleShot estiver aberto.</string>
     <string name="text_automaticNetworkConnectionOngoing">Escolhendo a melhor conexão</string>
     <string name="retry_receiving">Tentar receber novamente</string>
-    <string name="ask">Perguntar</string>
+    <string name="request">Perguntar</string>
     <string name="text_permissionRequest">Solicitação de permissão</string>
     <string name="storage_permission">Permissão de armazenamento</string>
     <string name="text_requestPermissionReadPhoneState">Permissão para ler o estado do telefone</string>

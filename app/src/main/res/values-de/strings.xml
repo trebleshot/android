@@ -187,7 +187,7 @@
     <string name="text_automaticNetworkConnectionFailed">Keine der Verbindungen zum Gerät hat funktioniert. Die Adresse könnte sich geändert haben. Bitte mit dem Netzwerk verbinden während TrebleShot geöffnet ist.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot wird entscheiden</string>
     <string name="retry_receiving">Empfang erneut versuchen</string>
-    <string name="ask">Fragen</string>
+    <string name="request">Fragen</string>
     <string name="text_permissionRequest">Berechtigungsanfrage</string>
     <string name="storage_permission">Speicherberechtigung</string>
     <string name="text_requestPermissionReadPhoneState">Erlaubnis zum Lesen des Telefonstatus</string>
