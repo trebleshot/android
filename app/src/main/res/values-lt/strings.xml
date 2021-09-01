@@ -49,14 +49,14 @@
     <string name="share">Bendrinti</string>
     <string name="edit">Redaguoti</string>
     <string name="received_files">Gauti failai</string>
-    <string name="choose_sharing_app">Pasirinkite programėlę, su kuria norite bendrinti</string>
-    <string name="preferences_reset_question">Atstatyti į numatytuosius\?</string>
+    <string name="choose_sharing_app">Bendrinti su…</string>
+    <string name="preferences_reset_question">Atstatyti visus nustatymus\?</string>
     <string name="receive_files_success">Gauti failai</string>
     <string name="receive_file_failure">Nepavyko gauti „%s“</string>
     <string name="send_file_failure">Nepavyko išsiųsti „%s“</string>
     <string name="empty_list">Sąrašas tuščias</string>
     <string name="receive_file_success">Gauta %s</string>
-    <string name="cancel_receiving">Atšaukti gavimą</string>
+    <string name="cancel_receiving">Atšaukti priėmimą</string>
     <string name="receiving">Gaunama</string>
     <string name="cancel_sending">Atšaukti siuntimą</string>
     <string name="sending">Siunčiama</string>
@@ -73,7 +73,7 @@
     <string name="root_folder">Pirminis (root)</string>
     <string name="deny">Atmesti</string>
     <string name="invalidate">Pripažinti negaliojančiais</string>
-    <string name="error_communication_security_credentials">Įgaliojimų nesutampa (reikia suporuoti)</string>
+    <string name="error_communication_security_credentials">Įgaliojimai nesutampa (reikia suporuoti)</string>
     <string name="received_using_web_share">Gauta naudojant žiniatinklio bendrinimą</string>
     <string name="receiving_using_web_web_share">Gaunama naudojant žiniatinklio bendrinimą</string>
     <string name="outgoing">Išeinantys</string>
@@ -81,13 +81,13 @@
     <string name="shared_texts">Bendrinami tekstai</string>
     <string name="host_address">Serverio adresas</string>
     <string name="error_socket_connection">Nepavyko prisijungti prie paslaugos</string>
-    <string name="credentials_mismatch_notice">Norint bendrauti, „%s“ turi pripažinti įgaliojimus negaliojančiais.</string>
+    <string name="credentials_mismatch_notice">Norint su juo bendrauti, panaikinkite „%s“ sertifikato galiojimą.</string>
     <string name="credentials_mismatch">Įgaliojimai nesutampa</string>
     <string name="image_bucket_thumbnail">Vaizdų rinkinio miniatiūra</string>
     <string name="background_service">Fono paslauga</string>
     <string name="set_up_network_notice">Nustatykite prieigos tašką arba prisijunkite prie Wi-Fi</string>
     <string name="split_apk">Split APK</string>
-    <string name="error_unknown_host">Nepavyko išspręsti šio prieglobos adreso!</string>
+    <string name="error_unknown_host">Nepavyko išspręsti šio prieglobos adreso.</string>
     <string name="introduction_personalize">Pritaikykite sau</string>
     <string name="externally_started_hotspot_notice">Kitur pradėtų prieigos taškų iš čia valdyti negalima</string>
     <string name="home">Pagrindinis</string>
@@ -113,7 +113,7 @@
     <string name="package_install_blocked">Nepavyko įdiegti paketo, nes programėlė yra užblokuojama</string>
     <string name="package_install_aborted">Nutrauktas paketo diegimas</string>
     <string name="package_install_failure">Nepavyko įdiegti paketo</string>
-    <string name="package_install_success">Paketas įdiegtas sėkmingai</string>
+    <string name="package_install_success">Paketas įdiegtas</string>
     <string name="app_icon">Programėlės piktograma</string>
     <string name="install_package">Įdiegti paketą</string>
     <string name="no_artists">Čia nėra atlikėjų</string>
@@ -128,16 +128,16 @@
     <string name="about_uprotocol">Apie uprotocol</string>
     <string name="powered_by_uprotocol" formatted="false">Paremta <b>uprotocol</b></string>
     <string name="sender_wait_for_receiver_notice">Gavėjai gali jus pasirinkti čia</string>
-    <string name="starting">Pradedama</string>
-    <string name="sender_finishing">Baigiama</string>
+    <string name="starting">Pradedama…</string>
+    <string name="sender_finishing">Baigiama…</string>
     <string name="sender_accepted">Siuntėjas priėmė</string>
     <string name="sender_not_expecting">%s nieko nesiuntė</string>
     <string name="receiver_pending">Pasirinkite siuntėją, kad pradėtumėte gavimą</string>
-    <string name="rejecting">Atmetama</string>
+    <string name="rejecting">Atmetama…</string>
     <string name="folder_name">Aplanko pavadinimas</string>
     <string name="error_empty_field">Laukas neturėtų būti tuščias</string>
     <string name="folder_not_writable">Aplankas apsaugotas nuo įrašymo</string>
-    <string name="storage_folder_notice">Aplankas, kuriame įrašomas turinys</string>
+    <string name="storage_folder_notice">Išsaugoti į…</string>
     <string name="change_storage_folder">Keisti saugojimo aplanką</string>
     <string name="storage_folder">Saugojimo aplankas</string>
     <string name="clear_storage_list">Išvalyti saugyklos sąrašą</string>
@@ -157,25 +157,25 @@
     <string name="change_picture">Keisti paveikslėlį</string>
     <string name="remove_picture">Pašalinti paveikslėlį</string>
     <string name="edit_profile">Redaguoti profilį</string>
-    <string name="warning_permissions_not_accepted">Dar nenustatėte leidimų!</string>
-    <string name="send_using_web_share_success_notice">Sėkmingai išsiųsta „%s“</string>
-    <string name="web_share_empty_notice">Kol kas niekuo nesidalijama. Pasidalykite kuo nors programėlėje ir grįžkite čia!</string>
+    <string name="warning_permissions_not_accepted">Pirmiausia nustatykite leidimus.</string>
+    <string name="send_using_web_share_success_notice">Išsiųsta „%s“</string>
+    <string name="web_share_empty_notice">Pirmiausia bendrinkite ką nors iš programėlės.</string>
     <string name="folders">Aplankai</string>
     <string name="images">Vaizdai</string>
     <string name="videos">Vaizdo įrašai</string>
     <string name="songs">Dainos</string>
     <string name="sharing_on_web">Bendrinimas žiniatinklyje</string>
     <string name="share_on_web">Bendrinti žiniatinklyje</string>
-    <string name="web_share_description">Sąsaja dalijimuisi failais per naršykles</string>
-    <string name="preparing">Ruošiama</string>
+    <string name="web_share_description">Sąsaja dalijimuisi failais per žiniatinklio naršykles</string>
+    <string name="preparing">Ruošiama…</string>
     <string name="selections">Pasirinkimai</string>
     <string name="run_in_background">Vykdyti fone</string>
     <string name="completed">Baigta</string>
-    <string name="error_protocol_unknown">Įvyko nežinoma protokolo klaida</string>
+    <string name="error_protocol_unknown">Nežinoma protokolo klaida</string>
     <string name="error_client_no_address">Klientas neturi adreso (pabandykite prisijungti rankiniu būdu)</string>
-    <string name="error_communication_unknown">Įvyko nežinoma ryšio klaida</string>
-    <string name="preferences_reset">Atstatyti į numatytuosius</string>
-    <string name="waiting_receiver_approval_notice">Laukiama gavėjo patvirtinimo</string>
+    <string name="error_communication_unknown">Nežinoma ryšio klaida</string>
+    <string name="preferences_reset">Atstatyti nustatymus</string>
+    <string name="waiting_receiver_approval_notice">Bus pradėta, kai tik gavėjas patvirtins…</string>
     <string name="client_model">Modelis</string>
     <string name="client_details">Kliento informacija</string>
     <string name="verify_client">Tikrinti klientą</string>
@@ -191,18 +191,18 @@
     <string name="notifications_instructive">Instrukciniai pranešimai</string>
     <string name="wifi_password">Wi-Fi slaptažodis</string>
     <string name="copy_password_and_open_settings">Kopijuoti slaptažodį ir atidaryti nustatymus</string>
-    <string name="wifi_connection_notice">1- Atidarykite Wi-Fi nustatymus
+    <string name="wifi_connection_notice">1- Atidarykite Wi-Fi nustatymus.
 \n
-\n2- Palaukite, kol Wi-Fi sąraše pasirodys „%s“
+\n2- Palaukite, kol Wi-Fi sąraše pasirodys „%s“.
 \n
-\n3- Pasirinkite (%s) ir įklijuokite slaptažodį (%s)
+\n3- Pasirinkite (%s) ir įklijuokite slaptažodį (%s).
 \n
-\n4- Sėkmingai prisijungę grįžkite čia</string>
+\n4- Po prisijungimo grįžkite čia.</string>
     <string name="connect_to_wifi">Prisijungti prie Wi-Fi</string>
     <string name="all_clients">Visi klientai</string>
     <string name="empty_clients_list">Klientai rodomi čia</string>
-    <string name="visit_web_page">Apsilankykite tinklalapyje</string>
-    <string name="visit_license_url">Apsilankykite licencijos URL</string>
+    <string name="visit_web_page">Apsilankykite svetainėje</string>
+    <string name="visit_license_url">Eiti į licencijos URL</string>
     <string name="join_us">Prisijunkite prie mūsų</string>
     <string name="license">Licencija</string>
     <string name="enter_address">Įveskite adresą</string>
@@ -210,14 +210,14 @@
     <string name="tap_to_launch_notice">Bakstelėkite, kad paleistumėte</string>
     <string name="error_content_not_found">Turinys nerastas</string>
     <string name="error_content_already_exists">Turinys jau egzistuoja</string>
-    <string name="error_content_not_accessible">Turinys nepasiekiamas</string>
+    <string name="error_content_not_accessible">Nepasiekiamas turinys</string>
     <string name="empty_online_clients_list">Internetiniai klientai rodomi čia</string>
-    <string name="error_no_route_to_host">Šis adresas nepasiekiamas</string>
-    <string name="error_unrecognized">Įvyko klaida %s</string>
-    <string name="error_unknown">Įvyko nežinoma klaida</string>
+    <string name="error_no_route_to_host">Nepasiekiamas adresas</string>
+    <string name="error_unrecognized">%s klaida</string>
+    <string name="error_unknown">Nežinoma klaida</string>
     <string name="error_different_client">Prijungtas klientas buvo kitoks</string>
-    <string name="host_address_invalid_notice">Įveskite interneto adresą!</string>
-    <string name="qr_code_image_notice">QR kodas bus rodomas čia!</string>
+    <string name="host_address_invalid_notice">Įveskite interneto adresą čia.</string>
+    <string name="qr_code_image_notice">QR kodas bus rodomas čia.</string>
     <string name="nothing_worked_rhetorical">Nieko nepavyko\?</string>
     <string name="generate_qr_code">Generuoti QR kodą</string>
     <string name="add_new_client">Pridėti naują klientą</string>
@@ -225,9 +225,9 @@
     <string name="show_all">Rodyti visus</string>
     <string name="choose_client">Pasirinkti klientą</string>
     <string name="compose">Rašyti</string>
-    <string name="delete_empty_text_question">Ar norite ištrinti tuščią tekstą\?</string>
+    <string name="delete_empty_text_question">Ištrinti tuščią tekstą\?</string>
     <string name="battery_saver_theme">Nustatoma baterijos tausojimo rėžimo</string>
-    <string name="follow_system_theme">Seka sistemos temą</string>
+    <string name="follow_system_theme">Sekti sistemos</string>
     <string name="light_theme">Šviesi</string>
     <string name="dark_theme">Tamsi</string>
     <string name="ui_theme">Tema</string>
@@ -240,14 +240,14 @@
     <string name="unrecognized_qr_code_notice">Neatpažintas kodas</string>
     <string name="vpn_interface">VPN serveris</string>
     <string name="empty_connections_list">Tinklai, prie kurių jungiatės, rodomi čia</string>
-    <string name="visit_using_browser_notice">Apsilankykite šioje nuorodoje naudodami naršyklę</string>
+    <string name="visit_using_browser_notice">Apsilankykite šioje nuorodoje naudodami žiniatinklio naršyklę</string>
     <string name="web_share">Bendrinimas žiniatinklyje</string>
     <string name="error_not_trusted_notice">Klientas turi jumis pasitikėti</string>
-    <string name="theme_optimize_summary">Naudoti tamsesnes spalvas</string>
-    <string name="theme_optimize">Optimizuoti AMOLED ekranams</string>
-    <string name="waiting">Laukiama</string>
+    <string name="theme_optimize_summary">Naudoja mažiau energijos</string>
+    <string name="theme_optimize">AMOLED</string>
+    <string name="waiting">Laukiama…</string>
     <string name="use_recommended_fonts_notice">Naudoti pridedamą pasirinktinį šriftą</string>
-    <string name="use_recommended_fonts">Taikyti rekomenduojamą šriftą</string>
+    <string name="use_recommended_fonts">Rekomenduojamas šriftas</string>
     <string name="count_milliseconds_short">%d ms.</string>
     <string name="introduction_set_up_profile">Nustatykite savo profilį</string>
     <string name="introduction_finished">Viskas paruošta!</string>
@@ -280,7 +280,7 @@
     <string name="empty_transfers_list">Visi perdavimai atsiras čia</string>
     <string name="allow">Leisti</string>
     <string name="changelog">Pakeitimų žurnalas</string>
-    <string name="storage_path_unavailable_notice">Jūsų norimas aplankas nepasiekiamas. Failai bus išsaugoti numatytame aplanke.
+    <string name="storage_path_unavailable_notice">Failai išsaugomi numatytame aplanke, nes norimas aplankas nepasiekiamas.
 \n
 \n%s</string>
     <string name="retry">Kartoti</string>
@@ -295,7 +295,7 @@
     <string name="share_with_other_apps">Bendrinti su kitomis programėlėmis</string>
     <string name="text_connect">Prisijungti</string>
     <string name="photo">Nuotrauka</string>
-    <string name="help_translate">Padėkite mums išversti</string>
+    <string name="help_translate">Vertimas</string>
     <string name="copy_here">Kopijuoti čia</string>
     <string name="rename">Pervadinti</string>
     <string name="notification_settings_summary">Atidaryti pranešimų nustatymus</string>
@@ -322,7 +322,7 @@
     <string name="high_priority_notifications">Svarbūs pranešimai</string>
     <string name="ongoing_task">Vykdoma užduotis</string>
     <string name="deleting_files_notice">Trinami failai</string>
-    <string name="preferences_reset_notice">Tai pritaikys pradinius nustatymus</string>
+    <string name="preferences_reset_notice">Tai atstatys pradinius nustatymus</string>
     <string name="size">Dydis</string>
     <string name="date">Data</string>
     <string name="name">Pavadinimas</string>
