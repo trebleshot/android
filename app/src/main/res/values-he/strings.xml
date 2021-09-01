@@ -19,20 +19,20 @@
     <string name="text_fileReceived">הקובץ התקבל</string>
     <string name="receive_file_success">%s התקבל</string>
     <string name="butn_scan">סריקה</string>
-    <string name="empty_list">אין פריטים</string>
+    <string name="empty_list">הרשימה ריקה</string>
     <string name="text_developerMode">מצב פיתוח</string>
     <string name="text_developerModeSummary">השבתת הגדרות המשתמש</string>
     <string name="text_deviceName">שם המכשיר</string>
     <string name="nickname_description">השם שיופיע אצל הלקוחות האחרים</string>
     <string name="text_deviceNameTitle">נא להקליד שם מכשיר</string>
     <string name="mesg_formatNotSupported">תבנית בלתי נתמכת</string>
-    <string name="send_file_failure">לא ניתן לשלוח קובץ. %s</string>
-    <string name="receive_file_failure">לא ניתן לקבל את ‚%s’</string>
+    <string name="send_file_failure">לא ניתן לשלוח „%s”</string>
+    <string name="receive_file_failure">לא ניתן לקבל את „%s”</string>
     <string name="receive_files_success">הקבצים התקבלו</string>
     <string name="text_deviceList">מכשירים</string>
     <string name="text_fileOpenAppChoose">פתיחה עם</string>
-    <string name="choose_sharing_app">בחירת יישומון לשיתוף מולו</string>
-    <string name="preferences_reset_question">לאפס לבררת מחדל\?</string>
+    <string name="choose_sharing_app">שיתוף עם…</string>
+    <string name="preferences_reset_question">לאפס את כל ההגדרות\?</string>
     <string name="received_files">קבצים שהתקבלו</string>
     <string name="edit">עריכה</string>
     <string name="share">שיתוף</string>
@@ -270,8 +270,8 @@
     <string name="size">גודל</string>
     <string name="text_trustZoneDeviceNotice">מקבל פריטים נכנסים אוטומטית כאשר האיזור המהימן פעיל</string>
     <string name="text_allowingToConnectNotice">לאפשר חיבורים ממכשיר זה</string>
-    <string name="preferences_reset">איפוס לבררת מחדל</string>
-    <string name="preferences_reset_notice">פעולה זו תחיל את ההגדרות הראשוניות</string>
+    <string name="preferences_reset">איפוס הגדרות</string>
+    <string name="preferences_reset_notice">פעולה זו תשחזר את הגדרות בררת המחדל</string>
     <string name="text_workerService">שירות מנגנון</string>
     <string name="text_taskCompleted">המשימה הושלמה</string>
     <string name="deleting_files_notice">הקבצים הנבחרים נמחקים</string>
@@ -323,7 +323,7 @@
     <string name="copy_here">להעתיק לכאן</string>
     <string name="text_qrAllowTrustZone">איזור מהימן עבור קוד QR</string>
     <string name="text_qrAllowTrustZoneSummary">לאפשר איזור מהימן עבור חיבורי קוד QR</string>
-    <string name="help_translate">לסייע לנו בתרגום</string>
+    <string name="help_translate">תרגום</string>
     <string name="text_contributors">בזכותם של</string>
     <string name="butn_gridSize">גודל רשת</string>
     <string name="butn_singleRow">שורה אחת</string>
@@ -365,7 +365,7 @@
     <string name="pause">השהיה</string>
     <string name="retry">ניסיון חוזר</string>
     <string name="interrupted_left_notice">לא נותרו העברות ממתינות. כדי להמשיך קבצים שנקטעו, יש להשתמש באפשרות ‚לנסות לקבל שוב’.</string>
-    <string name="storage_path_unavailable_notice">התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל.
+    <string name="storage_path_unavailable_notice">הקבצים נשמרים לתיקיית בררת המחדל כיוון שהתיקייה המבוקשת אינה נגישה.
 \n
 \n%s</string>
     <string name="butn_changelog">יומן שינויים</string>
@@ -434,11 +434,11 @@
     <string name="butn_connectionTest">בדיקת חיבור</string>
     <string name="count_milliseconds_short">%d מ״ש</string>
     <string name="butn_revokePin">שלילת קוד</string>
-    <string name="use_recommended_fonts">החלת הגופן המומלץ</string>
+    <string name="use_recommended_fonts">גופן מומלץ</string>
     <string name="use_recommended_fonts_notice">החלת הגופן המותאם שסופק</string>
-    <string name="waiting">בהמתנה</string>
-    <string name="theme_optimize">מיטוב למסכי AMOLED</string>
-    <string name="theme_optimize_summary">שימוש בצבעים כהים יותר</string>
+    <string name="waiting">בהמתנה…</string>
+    <string name="theme_optimize">AMOLED</string>
+    <string name="theme_optimize_summary">משתמש בפחות חשמל</string>
     <string name="mesg_errorNotTrustZoneDevice">יש להגדיר את המכשיר הזה כאיזור מהימן במכשיר המקבל כדי לבצע פעולה זו.</string>
     <string name="butn_enterIpAddress">נא להקליד כתובת IP</string>
     <string name="web_share">שיתוף דרך דפדפן</string>
@@ -467,11 +467,11 @@
     <string name="mesg_qrScannerDefaultMode">חזרה לפעולה בררת המחדל של קודים מסוג QR</string>
     <string name="show_as_qr_code">הצגה כקוד QR</string>
     <string name="image_bucket_thumbnail">תמונה ממוזערת של דלי תמונות</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> הוא פרוטוקול פתוח לשיתוף תוכן שמאפשר לסוגים שונים של תכניות לתקשר ולשתף ביניהן תוכן זו עם זו. הוא מאובטח כבררת מחדל ויש לו ערכה קבועה של מנשקי API.
+    <string name="about_uprotocol_content"><b>uprotocol</b> הוא פרוטוקול פתוח לשיתוף תוכן שמאפשר לסוגים שונים של תכניות לתקשר ולשתף ביניהן תוכן. הוא מאובטח כבררת מחדל ויש לו ערכה קבועה של מנשקי API.
 \n
 \nאם יש לך רקע בפיתוח, ניתן להקים אותו בקלות ולהוסיף תכונות שיתוף תוכן ליישומון שלך! </string>
     <string name="invalidate">פסילה</string>
-    <string name="credentials_mismatch_notice">‚%s’ דורש את פסילת פרטי הגישה כדי לתקשר.</string>
+    <string name="credentials_mismatch_notice">יש לפסול את האישור של „%s” כדי לתקשר אתו.</string>
     <string name="pick_the_sender">נא לבחור שולח</string>
     <string name="shared_by_other_apps">שותפה על ידי יישומונים אחרים</string>
     <string name="installing">מתבצעת התקנה</string>
@@ -482,7 +482,7 @@
     <string name="package_install_conflicted">החבילה סותרת חבילה אחרת</string>
     <string name="package_install_blocked">התקנת החבילה נכשלה עקב חסימת היישומון</string>
     <string name="package_install_aborted">התקנת החבילה בוטלה</string>
-    <string name="package_install_success">החבילה הותקנה בהצלחה</string>
+    <string name="package_install_success">החבילה הותקנה</string>
     <string name="app_icon">סמל יישומון</string>
     <string name="install_package">התקנת חבילה</string>
     <string name="no_artists">אין כאן אומנים</string>
@@ -491,19 +491,19 @@
     <string name="album_art">עטיפת אלבום</string>
     <string name="artists">אומנים</string>
     <string name="all_songs">כל השירים</string>
-    <string name="rejecting">נדחה</string>
+    <string name="rejecting">נדחה…</string>
     <string name="about_uprotocol">על אודות uprotocol</string>
     <string name="powered_by_uprotocol" formatted="false">מופעל על ידי <b>uprotocol</b></string>
     <string name="sender_wait_for_receiver_notice">מקבלים יכולים לבחור בך כאן</string>
-    <string name="starting">התחלה</string>
-    <string name="sender_finishing">בהליכי סיום</string>
+    <string name="starting">התחלה…</string>
+    <string name="sender_finishing">בהליכי סיום…</string>
     <string name="sender_accepted">השולח אישר</string>
     <string name="sender_not_expecting">לא נשלח דבר על ידי %s</string>
     <string name="receiver_pending">נא לבחור את השולח כדי להתחיל לקבל</string>
     <string name="folder_name">שם התיקייה</string>
     <string name="error_empty_field">השדה לא אמור להיות ריק</string>
     <string name="folder_not_writable">התיקייה מוגנת מפני כתיבה</string>
-    <string name="storage_folder_notice">התיקייה בה לשמור תכנים</string>
+    <string name="storage_folder_notice">לשמור ב…</string>
     <string name="change_storage_folder">החלפת תיקיית אחסון</string>
     <string name="storage_folder">תיקיית אחסון</string>
     <string name="clear_storage_list">מחיקת רשימת אחסון</string>
@@ -512,7 +512,7 @@
     <string name="nickname">כינוי</string>
     <string name="error_communication_security">אירעה שגיאת אבטחה</string>
     <string name="deny">סירוב</string>
-    <string name="error_communication_security_credentials">אין התאמה בפרטי הגישה (נדרש צימוד)</string>
+    <string name="error_communication_security_credentials">פרטי הגישה אינם תואמים (נדרש צימוד)</string>
     <string name="author">יוצר</string>
     <string name="authors">יוצרים</string>
     <string name="using_qr_code">באמצעות קוד QR</string>
@@ -526,11 +526,11 @@
     <string name="change_picture">החלפת תמונה</string>
     <string name="remove_picture">הסרת תמונה</string>
     <string name="edit_profile">עריכת פרופיל</string>
-    <string name="warning_permissions_not_accepted">עדיין לא הגדרת הרשאות!</string>
+    <string name="warning_permissions_not_accepted">יש להגדיר את ההרשאות תחילה.</string>
     <string name="received_using_web_share">התקבל דרך שיתוף באינטרנט</string>
     <string name="receiving_using_web_web_share">מתקבל באמצעות שיתוף באינטרנט</string>
-    <string name="send_using_web_share_success_notice">‚%s’ נשלח בהצלחה</string>
-    <string name="web_share_empty_notice">שום דבר לא משותף עדיין. יש לשתף משהו ביישומון ולחזור לכאן!</string>
+    <string name="send_using_web_share_success_notice">„%s” נשלח</string>
+    <string name="web_share_empty_notice">יש לשתף משהו מהיישומון תחילה.</string>
     <string name="folders">תיקיות</string>
     <string name="images">תמונות</string>
     <string name="videos">סרטונים</string>
@@ -538,16 +538,16 @@
     <string name="sharing_on_web">משותף דרך האינטרנט</string>
     <string name="share_on_web">שיתוף באינטרנט</string>
     <string name="web_share_description">מנשק לשיתוף קבצים דרך דפדפנים</string>
-    <string name="preparing">בהכנה</string>
+    <string name="preparing">בהכנה…</string>
     <string name="selections">בחירות</string>
     <string name="run_in_background">הפעלה ברקע</string>
     <string name="completed">הושלם</string>
-    <string name="error_protocol_unknown">אירעה שגיאת פרוטוקול לא ידוע</string>
+    <string name="error_protocol_unknown">שגיאת פרוטוקול לא ידוע</string>
     <string name="error_client_no_address">ללקוח אין כתובת (יש לנסות להתחבר ידנית)</string>
-    <string name="error_communication_unknown">אירעה שגיאת תקשורת לא ידועה</string>
+    <string name="error_communication_unknown">שגיאת תקשורת לא ידועה</string>
     <string name="outgoing">יוצא</string>
     <string name="incoming">נכנס</string>
-    <string name="waiting_receiver_approval_notice">בהמתנה לאישור מהמקבל</string>
+    <string name="waiting_receiver_approval_notice">יתחיל לאחר אישור מהמקבל…</string>
     <string name="client_model">דגם</string>
     <string name="client_details">פרטי לקוח</string>
     <string name="verify_client">אימות לקוח</string>
@@ -555,7 +555,7 @@
     <string name="client_offline_notice">הצד המרוחק אינו זמין</string>
     <string name="connect_to_client">מתבצעת התחברות ללקוח</string>
     <string name="write_system_settings_permission_required_notice">נדרשת הרשאה לשינוי הגדרות המערכת</string>
-    <string name="wifi_disabled_notice">הרשת האלחוטית מושבתת</string>
+    <string name="wifi_disabled_notice">הרשת האלחוטית כבויה</string>
     <string name="location_service_disabled_notice">שירות המיקום כבוי</string>
     <string name="not_connected_yet_notice">לא מחובר עדיין</string>
     <string name="enter_wifi_password_notice">להדביק את הססמה „%s”</string>
@@ -563,19 +563,19 @@
     <string name="notifications_instructive">התראות הנחיה</string>
     <string name="wifi_password">ססמת הרשת האלחוטית</string>
     <string name="copy_password_and_open_settings">להעתיק את הססמה ולפתוח את ההגדרות</string>
-    <string name="wifi_connection_notice">1 - להתחבר לרשת האלחוטית
+    <string name="wifi_connection_notice">1 - לפתוח את הגדרות הרשתות האלחוטיות.
 \n
-\n2 - להמתין להופעת ‚%s’ ברשימת הרשתות האלחוטיות
+\n2 - להמתין להופעת „%s” ברשימת הרשתות האלחוטיות
 \n
 \n3 - לבחור בה (%s) ולהדביק את הססמה (%s)
 \n
-\n4 - לחזור לכאן לאחר שהחיבור הצליח</string>
+\n4 - לחזור לכאן לאחר ההתחברות.</string>
     <string name="connect_to_wifi">התחברות לרשת אלחוטית</string>
     <string name="all_clients">כל הלקוחות</string>
     <string name="empty_clients_list">לקוחות מופיעים כאן</string>
     <string name="background_service">שירות רקע</string>
     <string name="visit_web_page">ביקור באתר</string>
-    <string name="visit_license_url">ביקור בכתובת הרישיון</string>
+    <string name="visit_license_url">מעבר לכתובת הרישיון</string>
     <string name="join_us">להצטרף אלינו</string>
     <string name="shared_texts">טקטים משותפים</string>
     <string name="license">רישיון</string>
@@ -585,21 +585,21 @@
     <string name="tap_to_launch_notice">נא לגעת להפעלה</string>
     <string name="error_content_not_found">התוכן לא נמצא</string>
     <string name="error_content_already_exists">התוכן כבר קיים</string>
-    <string name="error_content_not_accessible">התוכן אינו נגיש</string>
+    <string name="error_content_not_accessible">תוכן בלתי נגיש</string>
     <string name="empty_online_clients_list">לקוחות מקוונים מופיעים כאן</string>
-    <string name="error_no_route_to_host">כתובת זו אינה נגישה</string>
-    <string name="error_socket_connection">החיבור לשירות נכשל</string>
-    <string name="error_unrecognized">השגיאה %s אירעה</string>
-    <string name="error_unknown">אירעה שגיאה בלתי ידועה</string>
+    <string name="error_no_route_to_host">כתובת בלתי נגישה</string>
+    <string name="error_socket_connection">לא ניתן להתחבר לשירות</string>
+    <string name="error_unrecognized">שגיאת %s</string>
+    <string name="error_unknown">שגיאה בלתי ידועה</string>
     <string name="error_different_client">הלקוח שהתחבר היה שונה</string>
     <string name="credentials_mismatch">פרטי הגישה אינם תואמים</string>
-    <string name="host_address_invalid_notice">נא למלא כתובת אינטרנט!</string>
+    <string name="host_address_invalid_notice">נא למלא כאן כתובת אינטרנט.</string>
     <string name="set_up_network_notice">להקים נקודה חמה או להתחבר לרשת אלחוטית</string>
     <string name="split_apk">APK מפוצל</string>
-    <string name="package_install_failure">התקנת החבילה נכשלה</string>
+    <string name="package_install_failure">התקנת החבילה לא הצליחה</string>
     <string name="status_icon">סמל מצב</string>
     <string name="albums">אלבומים</string>
-    <string name="qr_code_image_notice">קוד ה־QR יופיע כאן!</string>
+    <string name="qr_code_image_notice">קוד QR יופיע כאן.</string>
     <string name="nothing_worked_rhetorical">שום דבר לא עבד\?</string>
     <string name="generate_qr_code">יצירת קוד QR</string>
     <string name="add_new_client">הוספת לקוח חדש</string>
@@ -614,11 +614,11 @@
     <string name="light_theme">בהירה</string>
     <string name="dark_theme">כהה</string>
     <string name="ui_theme">ערכת עיצוב</string>
-    <string name="error_unknown_host">לא ניתן לפענח את כתובת המארח הזאת!</string>
-    <string name="crash_report_notice">התרחשה קריסה של TrebleShot בהפעלה הקודמת.</string>
+    <string name="error_unknown_host">לא ניתן לפענח את כתובת המארח הזאת.</string>
+    <string name="crash_report_notice">TrebleShot קרס בפעם הקודמת.</string>
     <string name="crash_report">דוח קריסה</string>
     <string name="clients">לקוחות</string>
-    <string name="delete_received_files_question">וגם למחוק קבצים שהתקבלו מהכונן</string>
+    <string name="delete_received_files_question">למחוק קבצים שהתקבלו גם מהכונן</string>
     <string name="error_not_trusted_notice">על הלקוח לתת בך אמון</string>
     <string name="scanner_qr_code_notice">יש ליישר את סורק קוד ה־QR עם הריבוע</string>
     <string name="trust">אמון</string>
