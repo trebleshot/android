@@ -42,7 +42,7 @@
     <string name="receive_files_success">Filer mottatt</string>
     <string name="text_deviceList">Enheter</string>
     <string name="text_fileOpenAppChoose">Åpne med</string>
-    <string name="choose_sharing_app">Velg et program</string>
+    <string name="choose_sharing_app">Del med …</string>
     <string name="received_files">Mottatte filer</string>
     <string name="edit">Rediger</string>
     <string name="share">Del</string>
@@ -140,7 +140,7 @@
     <string name="text_newVersionAvailable">Ny versjon tilgjengelig!</string>
     <string name="butn_goUp">Gå oppover</string>
     <string name="folder">Mappe</string>
-    <string name="organizing_files_notice">Organiser filene dine</string>
+    <string name="organizing_files_notice">Organiserer filer …</string>
     <string name="mesg_communicating">Kommunikasjon</string>
     <string name="text_clientService">Klienttjeneste</string>
     <string name="text_serverService">Tjenertjeneste</string>
@@ -438,7 +438,7 @@
     <string name="turning_wifi_on_notice">Skrur på Wi-Fi</string>
     <string name="location_permission_required_notice">Skru på plasseringstjeneste for å fortsette.</string>
     <string name="mesg_connectToWiFiNetworkHelp">Koble til et Wi-Fi-nettverk for å fortsette</string>
-    <string name="removing_notice">Fjerner… Kan ta sin tid.</string>
+    <string name="removing_notice">Fjerner  …</string>
     <string name="help">Hjelp</string>
     <string name="choose">Velg</string>
     <string name="butn_fixConnection">Fiks tilkobling</string>
@@ -462,7 +462,7 @@
     <string name="butn_revokePin">Tilbakekall PIN</string>
     <string name="use_recommended_fonts">Bruk anbefalt skrift</string>
     <string name="use_recommended_fonts_notice">Bruk medfølgende tilpasset skrift</string>
-    <string name="waiting">Venter</string>
+    <string name="waiting">Venter …</string>
     <string name="theme_optimize">Optimaliser for AMOLED-skjermer</string>
     <string name="theme_optimize_summary">Bruk mørkere farger</string>
     <string name="butn_enterIpAddress">Skriv inn IP-adresse</string>
@@ -540,4 +540,113 @@
     <string name="clients">Klienter</string>
     <string name="trust">Tillit</string>
     <string name="remove_transfer_question">Fjern overføring\?</string>
+    <string name="package_install_conflicted">Pakken er i konflikt med en annen</string>
+    <string name="package_install_blocked">Kunne ikke installere pakke fordi programmet er blokkert</string>
+    <string name="package_install_aborted">Avbrøt pakkeinstallasjon</string>
+    <string name="image_bucket_thumbnail">Miniatyrbilde for bildebøtte</string>
+    <string name="about_uprotocol_content"><b>uprotocol</b> er en åpen delingsprotokoll for å la forskjellig programvare kommunisere og dele innhold. Det er sikkert som forvalg, og har et konsistent knippe API-er.
+\n
+\nSom utvikler kan du enkelt sette det opp og legge til innholdsdeling i ditt program. </string>
+    <string name="web_share_description">Et grensesnitt for fildeling via nettlesere</string>
+    <string name="web_share_empty_notice">Del noe fra programmet først.</string>
+    <string name="sharing_on_web">Deler på vev</string>
+    <string name="share_on_web">Del på vev</string>
+    <string name="invalidate">Ugyldiggjør</string>
+    <string name="error_communication_security_credentials">Identitetsdetaljer stemmer ikke overens (må parres)</string>
+    <string name="received_using_web_share">Mottatt ved bruk av vev-deling</string>
+    <string name="receiving_using_web_web_share">Mottak ved bruk av vev-deling</string>
+    <string name="selections">Utvalg</string>
+    <string name="error_client_no_address">Klienten har ingen adresse (prøv å koble til manuelt)</string>
+    <string name="client_offline_notice">Klienten annensteds hen er utilgjengelig</string>
+    <string name="write_system_settings_permission_required_notice">Trenger tilgang til å endre systeminnstillinger</string>
+    <string name="location_service_disabled_notice">Posisjonstjeneste av</string>
+    <string name="join_us">Ta del</string>
+    <string name="installing">Installasjon</string>
+    <string name="package_install_invalid">Pakken er ugyldig, eller har en annen signatur</string>
+    <string name="package_install_failure_storage">Installasjonen mislyktes som følge av utilstrekkelig lagringsplass</string>
+    <string name="sender_accepted">Avsender godtok</string>
+    <string name="sender_not_expecting">%s sendte ikke noe</string>
+    <string name="receiver_pending">Velg avsender for å starte mottak</string>
+    <string name="error_empty_field">Feltet kan ikke stå tomt</string>
+    <string name="root_folder">Rotmappe</string>
+    <string name="error_communication_security">En sikkerhetsfeil oppstod</string>
+    <string name="deny">Avslå</string>
+    <string name="using_qr_code">QR-kode</string>
+    <string name="wifi_connection_notice">1- Åpne Wi-Fi-innstillingene.
+\n
+\n2- Vent til «%s» vises i Wi-Fi-listen.
+\n
+\n3- Velg det (%s) og lim inn passordet (%s).
+\n
+\n4- Kom tilbake hit etter at du har koblet til.</string>
+    <string name="error_no_route_to_host">Utilgjengelig adresse</string>
+    <string name="package_install_incompatible">Pakken er ufullstendig</string>
+    <string name="all_songs">Alle sanger</string>
+    <string name="about_uprotocol">Om uprotocol</string>
+    <string name="powered_by_uprotocol" formatted="false">Drevet av <b>uprotocol</b></string>
+    <string name="rejecting">Avslår …</string>
+    <string name="clear_storage_list">Tøm lagringsliste</string>
+    <string name="send_using_web_share_success_notice">Sendte «%s»</string>
+    <string name="folders">Mapper</string>
+    <string name="images">Bilder</string>
+    <string name="videos">Videoer</string>
+    <string name="songs">Sanger</string>
+    <string name="preparing">Forbereder …</string>
+    <string name="run_in_background">Kjør i bakgrunnen</string>
+    <string name="completed">Fullført</string>
+    <string name="error_protocol_unknown">Ukjent protokollfeil</string>
+    <string name="error_communication_unknown">Ukjent kommunikasjonsfeil</string>
+    <string name="outgoing">Utgående</string>
+    <string name="incoming">Innkommende</string>
+    <string name="waiting_receiver_approval_notice">Starter når mottageren godkjenner …</string>
+    <string name="matching_client_question">Er det denne klienten du leter etter\?</string>
+    <string name="connect_to_client">Koble til klient</string>
+    <string name="enter_wifi_password_notice">Lim inn passordet «%s»</string>
+    <string name="connect_to_wifi_notice">Koble til «%s»</string>
+    <string name="notifications_instructive">Instruks-merknader</string>
+    <string name="copy_password_and_open_settings">Kopier passord og åpne innstillinger</string>
+    <string name="visit_web_page">Besøk nettsiden</string>
+    <string name="visit_license_url">Gå til lisens-nettadressen</string>
+    <string name="stop_all">Stopp alle</string>
+    <string name="tap_to_launch_notice">Trykk for å starte</string>
+    <string name="error_content_not_found">Fant ikke innholdet</string>
+    <string name="error_content_already_exists">Innholdet finnes allerede</string>
+    <string name="error_content_not_accessible">Utilgjengelig innhold</string>
+    <string name="empty_online_clients_list">Påloggede klienter vises her</string>
+    <string name="error_socket_connection">Kunne ikke koble til tjenesten</string>
+    <string name="error_unrecognized">%s-feil</string>
+    <string name="error_different_client">Tilkoblet klient var forskjellig</string>
+    <string name="credentials_mismatch_notice">Ugyldiggjør «%s» sitt sertifikat for å kommunisere med vedkommende.</string>
+    <string name="credentials_mismatch">Identitetsdetaljene stemmer ikke overens</string>
+    <string name="host_address_invalid_notice">Skriv inn en internettadresse her.</string>
+    <string name="set_up_network_notice">Sett opp nettverksdeling eller koble til Wi-Fi</string>
+    <string name="compose">Skriv melding</string>
+    <string name="split_apk">Del opp APK</string>
+    <string name="package_install_failure_unknown">Installasjonen mislyktes, ukjent av hvilken grunn</string>
+    <string name="package_install_failure">Kunne ikke installere pakken</string>
+    <string name="package_install_success">Pakke installert</string>
+    <string name="sender_wait_for_receiver_notice">Mottagere kan velge deg her</string>
+    <string name="starting">Starter …</string>
+    <string name="sender_finishing">Fullfører …</string>
+    <string name="folder_not_writable">Mappen er skrivebeskyttet</string>
+    <string name="storage_folder_notice">Lagre i …</string>
+    <string name="nickname">Kallenavn</string>
+    <string name="apps">Programmer</string>
+    <string name="manage_clients">Håndter klienter</string>
+    <string name="error_no_activity_to_view">Fant ikke noe program å åpne innholdet med</string>
+    <string name="granted">Innvilget</string>
+    <string name="grant">Innvilg</string>
+    <string name="change_picture">Endre bilde</string>
+    <string name="remove_picture">Fjern bilde</string>
+    <string name="edit_profile">Rediger profil</string>
+    <string name="warning_permissions_not_accepted">Sett opp tilganger først.</string>
+    <string name="qr_code_image_notice">En QR-kode vil vises her.</string>
+    <string name="nothing_worked_rhetorical">Ingenting fungerte\?</string>
+    <string name="delete_empty_text_question">Slett den tomme teksten\?</string>
+    <string name="battery_saver_theme">Bestemt av batterisparer</string>
+    <string name="error_unknown_host">Kunne ikke utlede denne vertsadressen.</string>
+    <string name="crash_report_notice">TrebleShot krasjet tidligere.</string>
+    <string name="delete_received_files_question">Slett mottatte filer fra disk også</string>
+    <string name="error_not_trusted_notice">Du må være betrodd av klienten</string>
+    <string name="scanner_qr_code_notice">Hold QR-kodeskanneren ovenfor boksen</string>
 </resources>
