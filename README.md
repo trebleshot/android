@@ -1,32 +1,28 @@
 ![Build Status](https://github.com/trebleshot/android/actions/workflows/android-test.yml/badge.svg)
 [![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/svg-badge.svg)](https://hosted.weblate.org/engage/trebleshot/)
 
-# TrebleShot - FOSS File & Text Sharing Tool for Android
+# TrebleShot - FOSS File Sharing App for Android
 
-Send and receive files over available connections. Got a question? Check the
-[FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md) page.
+Send and receive files securely without the internet. Got a question? Check the
+[FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md) page or join
+[the discussion group](https://t.me/trebleshot) on Telegram.
 
 ## Get it
 
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/org.monora.uprotocol.client.android/)
 [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=org.monora.uprotocol.client.android)
 
-An alpha version of the desktop version is also in the works, which you can find 
+An alpha version of the desktop version is also in the works. You can find it
 [here](https://github.com/genonbeta/TrebleShot-Desktop).
 
 ## Main Features
 
-* Share all kinds of content without size limitation:
-  * Videos
-  * Photos
-  * Music
-  * Apps
-  * Files & Folders (preserves content structure)
-  * Texts
-* Works without the internet; set up a hotspot and send to the other person
-* Share between multiple devices at the same time
-* Minimal UI optimized for speed
-* Recovers from errors after a failure
+* Secure; connections to other clients are encrypted using TLSv1.2 
+* Share media files, apps, files & folders, plain texts, and URLs
+* Works without the internet; set up a hotspot and you are good to go
+* Share between multiple devices
+* Send and receive locally using a web browser
+* Uses **uprotocol**, and open content-sharing protocol
 
 ## Build from Source
 
@@ -41,7 +37,6 @@ Run the following command to build the `fossReliant` variant in debug mode on Un
 
 We are using Weblate to translate TrebleShot. Click [here](https://hosted.weblate.org/engage/TrebleShot/) to go to the
 translation page.
-
 
 [![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/multi-auto.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
