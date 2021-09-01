@@ -26,12 +26,12 @@
     <string name="nickname_description">将出现在其他客户端上的名称</string>
     <string name="text_deviceNameTitle">输入一个设备名称</string>
     <string name="mesg_formatNotSupported">不支持的格式</string>
-    <string name="send_file_failure">无法发送文件 %s</string>
-    <string name="receive_file_failure">无法接收\' %s\'</string>
+    <string name="send_file_failure">无法发送 \"%s\"</string>
+    <string name="receive_file_failure">无法接收 \"%s\"</string>
     <string name="receive_files_success">文件已接收</string>
     <string name="text_deviceList">设备</string>
     <string name="text_fileOpenAppChoose">打开方式</string>
-    <string name="choose_sharing_app">选择一个应用来分享</string>
+    <string name="choose_sharing_app">选择分享应用…</string>
     <string name="received_files">已收到的文件</string>
     <string name="edit">编辑</string>
     <string name="share">分享</string>
@@ -163,7 +163,7 @@
     <string name="mesg_pathSameError">您不能选择旧文件夹</string>
     <string name="ques_checkOldFiles">移动文件？</string>
     <string name="mesg_newFilesReceived">新的文件已被接收</string>
-    <string name="preferences_reset_question">重置为默认值？</string>
+    <string name="preferences_reset_question">重设所有设置？</string>
     <string name="refresh">刷新</string>
     <string name="butn_showSystemApps">显示系统应用</string>
     <string name="transfer_details">详细信息</string>
@@ -252,7 +252,7 @@
     <string name="text_trustZoneDeviceNotice">当信任域开启时自动接收传入的文件</string>
     <string name="text_allowingToConnectNotice">允许来自该设备的连接</string>
     <string name="preferences_reset">重置回默认值</string>
-    <string name="preferences_reset_notice">这将会应用初始设置</string>
+    <string name="preferences_reset_notice">这将恢复默认设置</string>
     <string name="text_taskCompleted">任务已完成</string>
     <string name="deleting_files_notice">正在删除已选中的文件</string>
     <string name="text_networkServiceDiscovery">启用NSD</string>
@@ -340,7 +340,7 @@
     <string name="copy_here">复制到这里</string>
     <string name="text_qrAllowTrustZone">二维码连接设备启用信任域</string>
     <string name="text_qrAllowTrustZoneSummary">允许为通过二维码连接的设备打开信任域</string>
-    <string name="help_translate">帮助我们翻译</string>
+    <string name="help_translate">翻译</string>
     <string name="text_contributors">贡献者</string>
     <string name="butn_gridSize">网格大小</string>
     <string name="butn_singleRow">单行</string>
@@ -373,8 +373,8 @@
     <string name="pause">暂停</string>
     <string name="retry">重试</string>
     <string name="interrupted_left_notice">无正在等待的传输。使用“重试接收”选项以继续被中断的传输。</string>
-    <string name="storage_path_unavailable_notice">无法访问你想要保存文件的文件夹。文件将会被储存至默认文件夹。
-\n 
+    <string name="storage_path_unavailable_notice">正将文件保存到默认文件夹，因为想要的文件夹不可访问。
+\n
 \n %s</string>
     <string name="butn_changelog">更新日志</string>
     <string name="changelog">更新日志</string>
@@ -442,11 +442,11 @@
     <string name="butn_connectionTest">连接测试</string>
     <string name="count_milliseconds_short">%d 毫秒</string>
     <string name="butn_revokePin">撤销PIN</string>
-    <string name="use_recommended_fonts">使用推荐的字体</string>
+    <string name="use_recommended_fonts">推荐的字体</string>
     <string name="use_recommended_fonts_notice">使用预提供的自定义字体</string>
-    <string name="waiting">等待中</string>
-    <string name="theme_optimize">为AMOLED屏优化</string>
-    <string name="theme_optimize_summary">使用更黑的配色</string>
+    <string name="waiting">等待中…</string>
+    <string name="theme_optimize">AMOLED 屏</string>
+    <string name="theme_optimize_summary">耗电更少</string>
     <string name="mesg_errorNotTrustZoneDevice">将本设备在接收方设置为信任域设备方可进行此操作。</string>
     <string name="butn_enterIpAddress">输入IP地址</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
@@ -458,10 +458,10 @@
     <string name="text_transferSharedOnBrowser">已在浏览器上分享</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">或</string>
-    <string name="visit_using_browser_notice">使用你的浏览器访问该链接</string>
+    <string name="visit_using_browser_notice">使用你的网页浏览器访问该链接</string>
     <string name="text_webShareInfo">单独地为传输启用网页分享，然后使用连接至同一网络的设备访问以下任意的网页链接。</string>
     <string name="text_dowloadTrebleshotAndroid">下载运行于Android的TrebleShot</string>
-    <string name="empty_connections_list">你连接的网络在此出现</string>
+    <string name="empty_connections_list">你连接到的网络在此出现</string>
     <string name="mesg_errorNotAnIpAddress">不是IP地址
 \n(如 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">以链接分享还是以安装包分享？</string>
@@ -477,7 +477,7 @@
     <string name="mesg_qrScannerDefaultMode">返回到对二维码的默认设置</string>
     <string name="show_as_qr_code">以二维码形式显示</string>
     <string name="crash_report">崩溃报告</string>
-    <string name="delete_received_files_question">同时删除在磁盘上收到的文件</string>
+    <string name="delete_received_files_question">同时从磁盘上删除收到的文件</string>
     <string name="error_not_trusted_notice">您需要被该客户端信任</string>
     <string name="trust">信任</string>
     <string name="remove_transfer_question">移除传输？</string>
