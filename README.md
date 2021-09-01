@@ -47,13 +47,17 @@ translation page.
 
 ## Screenshots
 
-[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot1.webp" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot1.webp)
-[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot2.webp" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot2.webp)
-[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot3.webp" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot3.webp)
-[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot4.webp" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot4.webp)
-[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot5.webp" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot5.webp)
-[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot6.webp" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot6.webp)
-[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot7.webp" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot7.webp)
+[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot1.png" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot1.png)
+[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot2.png" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot2.png)
+[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot3.png" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot3.png)
+[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot4.png" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot4.png)
+[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot5.png" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot5.png)
+[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot6.png" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot6.png)
+[<img src="https://github.com/trebleshot/assets/blob/main/screenshots/android/shot7.png" width=160>](https://github.com/trebleshot/assets/blob/main/screenshots/android/shot7.png)
+
+### Web Interface
+
+[![Web Interface](https://github.com/trebleshot/assets/blob/main/screenshots/android/web1.png)](https://github.com/trebleshot/assets/blob/main/screenshots/android/web1.png)
 
 ## License
 
