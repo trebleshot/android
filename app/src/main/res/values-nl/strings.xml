@@ -25,7 +25,7 @@
     <string name="cancel_receiving">Ontvangen annuleren</string>
     <string name="text_fileReceived">Het bestand is ontvangen</string>
     <string name="butn_scan">Scannen</string>
-    <string name="empty_list">Geen items</string>
+    <string name="empty_list">Deze lijst bevat geen items</string>
     <string name="text_developerMode">Ontwikkelaarsmodus</string>
     <string name="text_developerModeSummary">Schakelt de gebruikersconfiguratie uit</string>
     <string name="text_deviceName">Apparaatnaam</string>
@@ -42,7 +42,7 @@
     <string name="receive_files_success">Bestanden ontvangen</string>
     <string name="text_deviceList">Apparaten</string>
     <string name="text_fileOpenAppChoose">Openen met</string>
-    <string name="choose_sharing_app">Kies een app om mee te delen</string>
+    <string name="choose_sharing_app">Delen met…</string>
     <string name="received_files">Ontvangen bestanden</string>
     <string name="edit">Bewerken</string>
     <string name="share">Delen</string>
@@ -299,8 +299,8 @@
     <string name="text_trustZoneDeviceNotice">Accepteert inkomende items automatisch als TrustZone is ingeschakeld</string>
     <string name="text_allowingToConnectNotice">Verbindingen van dit apparaat toestaan</string>
     <string name="preferences_reset">Standaardwaarden herstellen</string>
-    <string name="preferences_reset_question">Standaardwaarden herstellen?</string>
-    <string name="preferences_reset_notice">Dit herstelt de standaard instellingen</string>
+    <string name="preferences_reset_question">Wil je alle standaardwaarden herstellen\?</string>
+    <string name="preferences_reset_notice">Dit herstelt de standaardinstellingen</string>
     <string name="text_workerService">Werkdienst</string>
     <string name="text_taskCompleted">Taak afgerond</string>
     <string name="deleting_files_notice">Bezig met verwijderen van geselecteerde bestanden</string>
@@ -351,7 +351,7 @@
     <string name="copy_here">Hierheen kopiëren</string>
     <string name="text_qrAllowTrustZone">TrustZone voor QR-code</string>
     <string name="text_qrAllowTrustZoneSummary">TrustZone toestaan voor QR-codeverbindingen</string>
-    <string name="help_translate">Help mee met de vertaling</string>
+    <string name="help_translate">Vertalen</string>
     <string name="text_contributors">Mogelijk gemaakt door</string>
     <string name="butn_gridSize">Rastergrootte</string>
     <string name="butn_singleRow">Enkele rij</string>
@@ -381,7 +381,7 @@
     <string name="text_addDevicesToTransfer">Apparaten toevoegen aan overdracht</string>
     <string name="file">Bestand</string>
     <string name="text_noDeviceForTransfer">Geen apparaat toegevoegd voor deze overdracht</string>
-    <string name="third_party_libraries">Bibliotheken van derde partijen</string>
+    <string name="third_party_libraries">Externe bibliotheken</string>
     <string name="text_killServiceAfterLeavingSummary">Verbreekt de communicatie als er geen lopende taak is</string>
     <string name="text_killServiceAfterLeaving">Dienst stoppen als app wordt afgesloten</string>
     <string name="butn_donate">Steun de ontwikkeling</string>
@@ -395,7 +395,7 @@
     <string name="retry">Opnieuw</string>
     <string name="interrupted_left_notice">Geen taken meer in de wachtrij. Gebruik de optie \'Opnieuw\' om onderbroken bestanden te hervatten.</string>
     <string name="storage_path_unavailable_notice">De voorkeursmap is ontoegankelijk; bestanden worden opgeslagen in de standaardmap.
-\n 
+\n
 \n %s</string>
     <string name="butn_changelog">Wijzigingslog</string>
     <string name="changelog">Wijzigingslog</string>
@@ -463,11 +463,11 @@
     <string name="butn_connectionTest">Verbindingstest</string>
     <string name="count_milliseconds_short">%d ms</string>
     <string name="butn_revokePin">Pincode intrekken</string>
-    <string name="use_recommended_fonts">Aanbevolen lettertype gebruiken</string>
+    <string name="use_recommended_fonts">Aanbevolen lettertype</string>
     <string name="use_recommended_fonts_notice">Gebruik het meegeleverde lettertype</string>
     <string name="waiting">Bezig met wachten…</string>
-    <string name="theme_optimize">Optimaliseren voor AMOLED-schermen</string>
-    <string name="theme_optimize_summary">Gebruik donkerder kleuren</string>
+    <string name="theme_optimize">AMOLED</string>
+    <string name="theme_optimize_summary">Gebruikt minder energie</string>
     <string name="mesg_errorNotTrustZoneDevice">Dit apparaat moet worden ingesteld als TrustZone-apparaat op het ontvangende apparaat.</string>
     <string name="butn_enterIpAddress">IP-adres invoeren</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
@@ -479,7 +479,7 @@
     <string name="text_transferSharedOnBrowser">Gedeeld via browser</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">of</string>
-    <string name="visit_using_browser_notice">Open deze link in je browser</string>
+    <string name="visit_using_browser_notice">Open deze link in je webbrowser</string>
     <string name="text_webShareInfo">Schakel delen via internet in voor individuele overdrachten en bezoek één van de onderstaande links via een apparaat dat verbonden is met hetzelfde netwerk.</string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot voor Android</string>
     <string name="empty_connections_list">Verbonden netwerken worden hier getoond</string>
@@ -523,11 +523,11 @@
     <string name="empty_online_clients_list">Online-clients worden hier getoond</string>
     <string name="error_no_route_to_host">Dit adres is onbereikbaar</string>
     <string name="error_socket_connection">Er kan geen verbinding worden gemaakt met de dienst</string>
-    <string name="error_unrecognized">De volgende fout is opgetreden: ‘%s’</string>
-    <string name="error_unknown">Er is een onbekende fout opgetreden</string>
+    <string name="error_unrecognized">%s fout</string>
+    <string name="error_unknown">Onbekende fout</string>
     <string name="error_different_client">De verbonden client was een andere</string>
     <string name="credentials_mismatch">Inloggegevens komen niet overeen</string>
-    <string name="host_address_invalid_notice">Voer een webadres in.</string>
+    <string name="host_address_invalid_notice">Voer hier een webadres in.</string>
     <string name="set_up_network_notice">Zet een hotspot op of maak verbinding met wifi</string>
     <string name="nothing_worked_rhetorical">Werkt het niet\?</string>
     <string name="generate_qr_code">QR-code genereren</string>
@@ -544,13 +544,13 @@
     <string name="light_theme">Licht</string>
     <string name="dark_theme">Donker</string>
     <string name="ui_theme">Thema</string>
-    <string name="error_unknown_host">Het hostadres kan niet worden opgevraagd!</string>
+    <string name="error_unknown_host">Het hostadres kan niet worden opgevraagd.</string>
     <string name="crash_report_notice">TrebleShot is vorige keer gecrasht.</string>
     <string name="crash_report">Crashverslag</string>
     <string name="clients">Clients</string>
     <string name="delete_received_files_question">Ook ontvangen bestanden verwijderen</string>
     <string name="error_not_trusted_notice">De client dient je te markeren als vertrouwd</string>
-    <string name="warning_permissions_not_accepted">Je hebt nog geen rechten toegekend!</string>
+    <string name="warning_permissions_not_accepted">Je hebt nog geen rechten toegekend.</string>
     <string name="send_using_web_share_success_notice">‘%s’ is verstuurd</string>
     <string name="credentials_mismatch_notice">‘%s’ moet worden goedgekeurd om te kunnen communiceren.</string>
     <string name="enter_wifi_password_notice">Plak hier het wachtwoord van ‘%s’</string>
@@ -603,7 +603,7 @@
     <string name="folder_name">Mapnaam</string>
     <string name="error_empty_field">Dit veld mag niet blanco zijn</string>
     <string name="folder_not_writable">De map is schrijfbeveiligd</string>
-    <string name="storage_folder_notice">De map waarin items moeten worden opgeslagen</string>
+    <string name="storage_folder_notice">Opslaan in…</string>
     <string name="change_storage_folder">Opslagmap wijzigen</string>
     <string name="storage_folder">Opslagmap</string>
     <string name="clear_storage_list">Opslagruimtelijst wissen</string>
@@ -629,7 +629,7 @@
     <string name="edit_profile">Profiel bewerken</string>
     <string name="received_using_web_share">Ontvangen via webclient</string>
     <string name="receiving_using_web_web_share">Ontvangen via webclient</string>
-    <string name="web_share_empty_notice">Er wordt nog niks gedeeld. Deel iets in de app en kijk nogmaals hier!</string>
+    <string name="web_share_empty_notice">Deel eerst iets via de app.</string>
     <string name="folders">Mappen</string>
     <string name="images">Afbeeldingen</string>
     <string name="videos">Video\'s</string>
@@ -641,9 +641,9 @@
     <string name="selections">Selecties</string>
     <string name="run_in_background">Uitvoeren op achtergrond</string>
     <string name="completed">Voltooid</string>
-    <string name="error_protocol_unknown">Er is een onbekende protocolfout opgetreden</string>
+    <string name="error_protocol_unknown">Onbekende protocolfout</string>
     <string name="error_client_no_address">De client heeft geen adres - probeer handmatig te verbinden</string>
-    <string name="error_communication_unknown">Er is een onbekende communicatiefout opgetreden</string>
+    <string name="error_communication_unknown">Onbekende communicatiefout</string>
     <string name="outgoing">Uitgaand</string>
     <string name="incoming">Inkomend</string>
     <string name="waiting_receiver_approval_notice">Bezig met wachten op goedkeuring…</string>
@@ -652,6 +652,6 @@
     <string name="verify_client">Client goedkeuren</string>
     <string name="matching_client_question">Is dit de client die je bedoelde\?</string>
     <string name="client_offline_notice">De externe client is niet beschikbaar</string>
-    <string name="connect_to_client">Bezig met verbinden met client…</string>
+    <string name="connect_to_client">Verbinden met client</string>
     <string name="write_system_settings_permission_required_notice">Niet bevoegd om de systeeminstellingen aan te passen</string>
 </resources>
