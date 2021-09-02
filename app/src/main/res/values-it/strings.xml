@@ -22,19 +22,19 @@
     <string name="text_fileReceived">Il file è stato ricevuto</string>
     <string name="receive_file_success">%s ricevuti</string>
     <string name="butn_scan">Scansiona</string>
-    <string name="empty_list">Nessun elemento</string>
+    <string name="empty_list">La lista è vuota</string>
     <string name="text_developerMode">Modalità Sviluppatore</string>
     <string name="text_developerModeSummary">Disattiva la configurazione utente</string>
     <string name="text_deviceName">Nome Dispositivo</string>
     <string name="nickname_description">Il nome che sarà visualizzato sugli altri dispositivi</string>
     <string name="text_deviceNameTitle">Inserisci il nome di un dispositivo</string>
     <string name="mesg_formatNotSupported">Formato non supportato</string>
-    <string name="send_file_failure">Impossibile inviare il file. %s</string>
-    <string name="receive_file_failure">Impossibile ricevere %s</string>
+    <string name="send_file_failure">Impossibile inviare \"%s\"</string>
+    <string name="receive_file_failure">Impossibile ricevere \"%s\"</string>
     <string name="receive_files_success">File Ricevuti</string>
     <string name="text_deviceList">Dispositivi</string>
     <string name="text_fileOpenAppChoose">Apri con</string>
-    <string name="choose_sharing_app">Scegli un\'applicazione con cui condividere</string>
+    <string name="choose_sharing_app">Condividi con…</string>
     <string name="received_files">File Ricevuti</string>
     <string name="edit">Modifica</string>
     <string name="share">Condividi</string>
@@ -233,7 +233,7 @@
     <string name="check">Seleziona</string>
     <string name="uncheck">Deseleziona</string>
     <string name="text_uncheckedItemsNotice">Deselezionare gli elementi per rimuoverli</string>
-    <string name="preferences_reset_question">Ripristinare le impostazioni predefinite\?</string>
+    <string name="preferences_reset_question">Ripristinare le impostazioni\?</string>
     <string name="text_connectionPermission">Autorizzazione di connessione</string>
     <string name="butn_typeNewEntry">Inserisci nuova voce</string>
     <string name="text_fileRoot">Root</string>
@@ -258,8 +258,8 @@
     <string name="size">Dimensione</string>
     <string name="text_trustZoneDeviceNotice">Accetta automaticamente gli elementi in arrivo quando TrustZone è attiva</string>
     <string name="text_allowingToConnectNotice">Consenti connessioni da questo dispositivo</string>
-    <string name="preferences_reset">Ripristina Impostazioni Predefinite</string>
-    <string name="preferences_reset_notice">Verranno applicate le impostazioni iniziali</string>
+    <string name="preferences_reset">Ripristina Impostazioni</string>
+    <string name="preferences_reset_notice">Verranno ripristinate le impostazioni predefinite</string>
     <string name="text_taskCompleted">Attività completata</string>
     <string name="deleting_files_notice">Eliminazione dei file selezionati</string>
     <string name="high_priority_notifications">Notifiche Importanti</string>
@@ -331,7 +331,7 @@
     <string name="copy_here">Copia Qui</string>
     <string name="text_qrAllowTrustZone">TrustZone per Codice QR</string>
     <string name="text_qrAllowTrustZoneSummary">Consenti TrustZone per connessioni con codice QR</string>
-    <string name="help_translate">Aiuta a Tradurre</string>
+    <string name="help_translate">Traduzione</string>
     <string name="text_contributors">Reso possibile da</string>
     <string name="butn_gridSize">Dimensione Griglia</string>
     <string name="butn_singleRow">Riga Singola</string>
@@ -373,8 +373,8 @@
     <string name="pause">Pausa</string>
     <string name="retry">Riprova</string>
     <string name="interrupted_left_notice">Nessun trasferimento in sospeso. Per riprendere i file interrotti, usare l\'opzione «Riprova a ricevere».</string>
-    <string name="storage_path_unavailable_notice">La cartella desiderata non è accessibile. I file verranno salvati nella cartella predefinita.
-\n 
+    <string name="storage_path_unavailable_notice">I file verranno salvati nella cartella predefinita, dato che quella desiderata non è accessibile.
+\n
 \n%s</string>
     <string name="butn_changelog">Novità</string>
     <string name="changelog">Novità</string>
@@ -442,11 +442,11 @@
     <string name="butn_connectionTest">Test Connessione</string>
     <string name="count_milliseconds_short">%d millisecondi</string>
     <string name="butn_revokePin">Revoca PIN</string>
-    <string name="use_recommended_fonts">Applica il Carattere Consigliato</string>
+    <string name="use_recommended_fonts">Carattere Consigliato</string>
     <string name="use_recommended_fonts_notice">Usa il carattere personalizzato in dotazione</string>
-    <string name="waiting">In attesa</string>
-    <string name="theme_optimize">Ottimizza per schermi AMOLED</string>
-    <string name="theme_optimize_summary">Usa colori più scuri</string>
+    <string name="waiting">In attesa…</string>
+    <string name="theme_optimize">AMOLED</string>
+    <string name="theme_optimize_summary">Usa meno energia</string>
     <string name="mesg_errorNotTrustZoneDevice">Per eseguire questa operazione, questo dispositivo deve essere impostato come TrustZone sul dispositivo ricevente.</string>
     <string name="butn_enterIpAddress">Inserisci l\'indirizzo IP</string>
     <string name="web_share">Condivisi tramite browser</string>
@@ -456,7 +456,7 @@
     <string name="text_transferSharedOnBrowser">Condiviso tramite browser</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">oppure</string>
-    <string name="visit_using_browser_notice">Usa un browser per aprire questo collegamento</string>
+    <string name="visit_using_browser_notice">Apri questo collegamento con il browser web</string>
     <string name="text_webShareInfo">Abilita la condivisione web singolarmente per ogni trasferimento e visita i collegamenti mostrati di seguito con un dispositivo collegato alla stessa rete.</string>
     <string name="text_dowloadTrebleshotAndroid">Scarica TrebleShot per Android</string>
     <string name="empty_connections_list">Qui appariranno le reti a cui connettersi</string>
@@ -487,8 +487,8 @@
     <string name="package_install_conflicted">Questo pacchetto è in conflitto con un altro</string>
     <string name="package_install_blocked">Installazione del pacchetto fallita a causa del blocco dell\'app</string>
     <string name="package_install_aborted">Installazione del pacchetto interrotta</string>
-    <string name="package_install_failure">Installazione del pacchetto fallita</string>
-    <string name="package_install_success">Pacchetto installato correttamente</string>
+    <string name="package_install_failure">Impossibile installare il pacchetto</string>
+    <string name="package_install_success">Pacchetto installato</string>
     <string name="app_icon">Icona app</string>
     <string name="install_package">Installa Pacchetto</string>
     <string name="no_artists">Nessun artista</string>
@@ -498,22 +498,22 @@
     <string name="artists">Artisti</string>
     <string name="albums">Album</string>
     <string name="all_songs">Tutte le Canzoni</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> è un protocollo aperto per la condivisione dei contenuti, che permette a diversi tipi di software di comunicare e condividere contenuti tra loro. È sicuro per impostazione predefinita e viene fornito con un insieme coerente di API.
+    <string name="about_uprotocol_content"><b>uprotocol</b> è un protocollo aperto per la condivisione dei contenuti, che permette a diversi tipi di software di comunicare e condividere contenuti. È sicuro per impostazione predefinita e viene fornito con un insieme coerente di API.
 \n
 \nCome sviluppatore, puoi implementarlo facilmente nella tua app, aggiungendo funzionalità di condivisione dei contenuti! </string>
     <string name="about_uprotocol">Informazioni su uprotocol</string>
     <string name="powered_by_uprotocol" formatted="false">Realizzato da <b>uprotocol</b></string>
-    <string name="sender_wait_for_receiver_notice">I riceventi possono sceglierti qui</string>
-    <string name="starting">Inizializzazione</string>
-    <string name="sender_finishing">Finalizzazione</string>
+    <string name="sender_wait_for_receiver_notice">I destinatari possono sceglierti qui</string>
+    <string name="starting">Inizializzazione…</string>
+    <string name="sender_finishing">Finalizzazione…</string>
     <string name="sender_accepted">Mittente accettato</string>
     <string name="sender_not_expecting">%s non stava inviando nulla</string>
     <string name="receiver_pending">Scegli il mittente per iniziare a ricevere</string>
-    <string name="rejecting">Rifiuto</string>
+    <string name="rejecting">Rifiuto…</string>
     <string name="folder_name">Nome Cartella</string>
     <string name="error_empty_field">Il campo non può essere vuoto</string>
     <string name="folder_not_writable">La cartella è protetta da scrittura</string>
-    <string name="storage_folder_notice">La cartella in cui salvare i contenuti</string>
+    <string name="storage_folder_notice">Salva in…</string>
     <string name="change_storage_folder">Cambia Cartella Archiviazione</string>
     <string name="storage_folder">Cartella Archiviazione</string>
     <string name="clear_storage_list">Pulisci Lista Archiviazione</string>
@@ -537,27 +537,27 @@
     <string name="change_picture">Cambia Immagine</string>
     <string name="remove_picture">Rimuovi Immagine</string>
     <string name="edit_profile">Modifica Profilo</string>
-    <string name="warning_permissions_not_accepted">Le autorizzazioni non sono ancora state impostate!</string>
+    <string name="warning_permissions_not_accepted">Impostare le autorizzazioni.</string>
     <string name="received_using_web_share">Ricevuto tramite Condivisione Web</string>
     <string name="receiving_using_web_web_share">Ricezione tramite Condivisione Web</string>
-    <string name="send_using_web_share_success_notice">\"%s\" inviato con successo</string>
-    <string name="web_share_empty_notice">Non c\'è ancora nulla da condividere. Condividi qualcosa sull\'app e torna qui!</string>
+    <string name="send_using_web_share_success_notice">\"%s\" inviato</string>
+    <string name="web_share_empty_notice">Prima condividi qualcosa dall\'app.</string>
     <string name="folders">Cartelle</string>
     <string name="images">immagini</string>
     <string name="videos">Video</string>
     <string name="songs">Canzoni</string>
     <string name="sharing_on_web">Condivisione Tramite Web</string>
     <string name="share_on_web">Condividi Tramite Web</string>
-    <string name="web_share_description">Un\'interfaccia per la condivisione di file tramite browser</string>
-    <string name="preparing">Preparazione</string>
+    <string name="web_share_description">Un\'interfaccia per la condivisione di file tramite browser web</string>
+    <string name="preparing">Preparazione…</string>
     <string name="run_in_background">Esecuzione in Background</string>
     <string name="completed">Completati</string>
-    <string name="error_protocol_unknown">Si è verificato un errore di protocollo sconosciuto</string>
+    <string name="error_protocol_unknown">Errore di protocollo sconosciuto</string>
     <string name="error_client_no_address">Il client non ha un indirizzo (prova a connetterti manualmente)</string>
-    <string name="error_communication_unknown">Si è verificato un errore di comunicazione sconosciuto</string>
+    <string name="error_communication_unknown">Errore di comunicazione sconosciuto</string>
     <string name="outgoing">In uscita</string>
     <string name="incoming">In arrivo</string>
-    <string name="waiting_receiver_approval_notice">In attesa dell\'approvazione del ricevente</string>
+    <string name="waiting_receiver_approval_notice">In attesa dell\'approvazione del destinatario…</string>
     <string name="client_model">Modello</string>
     <string name="client_details">Dettagli Client</string>
     <string name="verify_client">Verifica Client</string>
@@ -565,27 +565,27 @@
     <string name="client_offline_notice">Il client remoto non è disponibile</string>
     <string name="connect_to_client">Connessione al Client</string>
     <string name="write_system_settings_permission_required_notice">È necessaria l\'autorizzazione per modificare le impostazioni di sistema</string>
-    <string name="wifi_disabled_notice">La Wi-Fi è disattivata</string>
-    <string name="location_service_disabled_notice">Il Servizio di Localizzazione è disattivato</string>
+    <string name="wifi_disabled_notice">Wi-Fi disattivata</string>
+    <string name="location_service_disabled_notice">Servizio di localizzazione disattivato</string>
     <string name="not_connected_yet_notice">Non ancora collegato</string>
     <string name="enter_wifi_password_notice">Incolla la password \"%s\"</string>
     <string name="connect_to_wifi_notice">Connettiti a \"%s\"</string>
     <string name="notifications_instructive">Notifiche Istruttive</string>
     <string name="wifi_password">Password Wi-Fi</string>
     <string name="copy_password_and_open_settings">Copia Password e Apri Impostazioni</string>
-    <string name="wifi_connection_notice">1. Apri le impostazioni Wi-Fi
+    <string name="wifi_connection_notice">1. Apri le impostazioni Wi-Fi.
 \n
-\n2. Aspetta che appaia \"%s\" nella lista delle reti Wi-Fi
+\n2. Aspetta che appaia \"%s\" nella lista delle reti Wi-Fi.
 \n
-\n3. Scegli la rete (%s) e incolla la password (%s)
+\n3. Scegli la rete (%s) e incolla la password (%s).
 \n
-\n4. Torna qui dopo aver effettuato la connessione</string>
+\n4. Torna qui dopo aver effettuato la connessione.</string>
     <string name="connect_to_wifi">Connettiti alla Wi-Fi</string>
     <string name="all_clients">Tutti i Client</string>
     <string name="empty_clients_list">I client appariranno qui</string>
     <string name="background_service">Servizio in Background</string>
     <string name="visit_web_page">Visita Sito</string>
-    <string name="visit_license_url">Visita URL Licenza</string>
+    <string name="visit_license_url">Vai all\'URL della Licenza</string>
     <string name="join_us">Unisciti a Noi</string>
     <string name="shared_texts">Testi Condivisi</string>
     <string name="license">Licenza</string>
@@ -597,16 +597,16 @@
     <string name="error_content_already_exists">Il contenuto esiste già</string>
     <string name="error_content_not_accessible">Contenuto non accessibile</string>
     <string name="empty_online_clients_list">I client online appariranno qui</string>
-    <string name="error_no_route_to_host">Questo indirizzo non è raggiungibile</string>
+    <string name="error_no_route_to_host">Indirizzo non raggiungibile</string>
     <string name="error_socket_connection">Impossibile connettersi al servizio</string>
-    <string name="error_unrecognized">Si è verificato l\'errore %s</string>
-    <string name="error_unknown">Si è verificato un errore sconosciuto</string>
+    <string name="error_unrecognized">Errore %s</string>
+    <string name="error_unknown">Errore sconosciuto</string>
     <string name="error_different_client">Il client collegato era diverso</string>
-    <string name="credentials_mismatch_notice">\'%s\" richiede l\'invalidamento delle credenziali per comunicare.</string>
+    <string name="credentials_mismatch_notice">Invalida le credenziali di \"%s\" per poter comunicare con il dispositivo.</string>
     <string name="credentials_mismatch">Credenziali Non Valide</string>
-    <string name="host_address_invalid_notice">Inserisci un indirizzo internet!</string>
+    <string name="host_address_invalid_notice">Inserisci un indirizzo internet.</string>
     <string name="set_up_network_notice">Configura un hotspot o connettiti alla Wi-Fi</string>
-    <string name="qr_code_image_notice">Il Codice QR apparirà qui!</string>
+    <string name="qr_code_image_notice">Il codice QR apparirà qui.</string>
     <string name="generate_qr_code">Crea Codice QR</string>
     <string name="add_new_client">Aggiungi Nuovo Client</string>
     <string name="online_clients">Client Online</string>
@@ -614,15 +614,15 @@
     <string name="choose_client">Scegli Client</string>
     <string name="transfer_history">Cronologia Trasferimenti</string>
     <string name="compose">Componi</string>
-    <string name="delete_empty_text_question">Vuoi eliminare il testo vuoto\?</string>
+    <string name="delete_empty_text_question">Eliminare il testo vuoto\?</string>
     <string name="split_apk">Dividi APK</string>
     <string name="battery_saver_theme">Deciso da Risparmio Batteria</string>
     <string name="follow_system_theme">Sistema</string>
     <string name="light_theme">Chiaro</string>
     <string name="dark_theme">Scuro</string>
     <string name="ui_theme">Tema</string>
-    <string name="error_unknown_host">Impossibile risolvere questo indirizzo host!</string>
-    <string name="crash_report_notice">TrebleShot ha subito un arresto anomalo in una sessione precedente.</string>
+    <string name="error_unknown_host">Impossibile risolvere questo indirizzo host.</string>
+    <string name="crash_report_notice">TrebleShot si è arrestato in modo anomalo durante la sessione precedente.</string>
     <string name="crash_report">Segnalazione Arresto Anomalo</string>
     <string name="clients">Client</string>
     <string name="delete_received_files_question">Elimina i file ricevuti anche dal disco</string>
