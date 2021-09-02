@@ -531,4 +531,49 @@
     <string name="scanner_qr_code_notice">قم بمحاذاة الماسح الضوئي لرمز الاستجابة السريعة مع الصندوق</string>
     <string name="trust">استوثق</string>
     <string name="remove_transfer_question">إزالة النقل؟</string>
+    <string name="web_share_empty_notice">شارك شيئًا من التطبيق أولاً.</string>
+    <string name="web_share_description">واجهة لمشاركة الملفات عبر متصفحات الويب</string>
+    <string name="preparing">اعداد…</string>
+    <string name="selections">التحديد</string>
+    <string name="error_protocol_unknown">خطأ بروتوكول غير معروف</string>
+    <string name="error_client_no_address">ليس للعميل عنوان (حاول الاتصال يدويًا)</string>
+    <string name="error_communication_unknown">خطأ اتصال غير معروف</string>
+    <string name="outgoing">الصادره</string>
+    <string name="incoming">الوارده</string>
+    <string name="waiting_receiver_approval_notice">تبدأ بمجرد موافقة المستلم …</string>
+    <string name="client_model">النموذج</string>
+    <string name="client_details">تفاصيل العميل</string>
+    <string name="verify_client">تحقق من العميل</string>
+    <string name="matching_client_question">هل هذا هو العميل الذي تبحث عنه؟</string>
+    <string name="client_offline_notice">عميل التحكم عن بعد غير متوفر</string>
+    <string name="connect_to_client">الاتصال بالعميل</string>
+    <string name="write_system_settings_permission_required_notice">يحتاج إلى إذن لتعديل إعدادات النظام</string>
+    <string name="wifi_disabled_notice">إيقاف شبكة Wi-Fi</string>
+    <string name="location_service_disabled_notice">إيقاف خدمة الموقع</string>
+    <string name="not_connected_yet_notice">غير متصل بعد</string>
+    <string name="enter_wifi_password_notice">لصق كلمة المرور \"%s\"</string>
+    <string name="connect_to_wifi_notice">الاتصال بـ \"%s\"</string>
+    <string name="notifications_instructive">إخطارات إرشادية</string>
+    <string name="wifi_password">كلمة مرور Wi-Fi</string>
+    <string name="copy_password_and_open_settings">نسخ كلمة المرور وفتح الإعدادات</string>
+    <string name="wifi_connection_notice">1- افتح إعدادات Wi-Fi.
+\n
+\n2- انتظر حتى يظهر \"%s\" على قائمة Wi-Fi.
+\n
+\n3- اخترها (%s) والصق كلمة المرور (%s).
+\n
+\n4- العودة هنا بعد الاتصال.</string>
+    <string name="connect_to_wifi">الاتصال بشبكة Wi-Fi</string>
+    <string name="empty_clients_list">يظهر العملاء هنا</string>
+    <string name="visit_web_page">زيارة الموقع</string>
+    <string name="visit_license_url">الانتقال إلى عنوان URL للترخيص</string>
+    <string name="join_us">انضم إلينا</string>
+    <string name="shared_texts">نصوص مشتركة</string>
+    <string name="host_address">عنوان المضيف</string>
+    <string name="tap_to_launch_notice">انقر للتشغيل</string>
+    <string name="error_content_not_found">لم يتم العثور على المحتوى</string>
+    <string name="error_content_already_exists">المحتوى موجود بالفعل</string>
+    <string name="error_content_not_accessible">محتوى لا يمكن الوصول إليه</string>
+    <string name="empty_online_clients_list">يظهر العملاء عبر الإنترنت هنا</string>
+    <string name="credentials_mismatch_notice">إبطال شهادة \"%s\" للاتصال بها.</string>
 </resources>
