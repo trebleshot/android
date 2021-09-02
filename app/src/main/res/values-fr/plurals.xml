@@ -48,4 +48,20 @@
         <item quantity="one">Partage unique</item>
         <item quantity="other">Partager avec %d appareils</item>
     </plurals>
+    <plurals name="albums">
+        <item quantity="one">%d album</item>
+        <item quantity="other">%d albums</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d tâche</item>
+        <item quantity="other">%d tâches</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">%d élément</item>
+        <item quantity="other">%d éléments</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">%d fichier est sélectionné</item>
+        <item quantity="other">%d fichiers sont sélectionnés</item>
+    </plurals>
 </resources>
