@@ -596,4 +596,6 @@
     <string name="error_not_trusted_notice">Вы должны быть отмечены как \"доверенный\" в клиенте</string>
     <string name="scanner_qr_code_notice">Совместите сканер QR-кода с квадратом</string>
     <string name="remove_transfer_question">Удалить передачу\?</string>
+    <string name="sender_wait_for_receiver_notice">Получатели могут выбрать вас здесь</string>
+    <string name="add_storage_access">Добавить доступ к хранилищу…</string>
 </resources>
