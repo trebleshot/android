@@ -1,3 +1,9 @@
+## 2.0.1 Stable Release
+
+### Miscellaneous
+
+* Updated translations
+
 ## 2.0 Stable Release
 
 ### What's new?
