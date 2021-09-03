@@ -9,11 +9,11 @@ Send and receive files securely without the internet. Got a question? Check the
 
 ## Get it
 
-[<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/org.monora.uprotocol.client.android/)
-[<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=org.monora.uprotocol.client.android)
+[<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/)
+[<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 An alpha version of the desktop version is also in the works. You can find it
-[here](https://github.com/genonbeta/TrebleShot-Desktop).
+[here](https://github.com/trebleshot/desktop).
 
 ## Main Features
 
