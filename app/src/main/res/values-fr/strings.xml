@@ -285,7 +285,7 @@
     <string name="text_connectDevices">Connecter les appareils</string>
     <string name="text_network">Réseau</string>
     <string name="text_connect">Connecter</string>
-    <string name="share_with_other_apps">Partager via d\'autres applications</string>
+    <string name="share_with_other_apps">Partager via d’autres applications</string>
     <string name="start_hotspot">Mettre en place un point d’accès</string>
     <string name="stop_hotspot">Arrêter le point d’accès</string>
     <string name="text_easyDiscoveryHelp">Scannez ceci si les deux appareils sont sur le même réseau</string>
@@ -600,4 +600,20 @@
     <string name="license">Licence</string>
     <string name="join_us">Rejoignez-nous</string>
     <string name="nickname">Surnom</string>
+    <string name="package_install_failure_unknown">L’installation a échoué pour une raison inconnue</string>
+    <string name="package_install_failure_storage">L’installation a échoué en raison d’un espace de stockage insuffisant</string>
+    <string name="package_install_invalid">Le paquet n’est pas valide ou a une signature différente</string>
+    <string name="package_install_blocked">L’installation du paquet a échoué en raison du blocage de l’application</string>
+    <string name="sender_not_expecting">%s n’envoyait rien</string>
+    <string name="error_communication_security_credentials">Identifiants non concordants (nécessite un jumelage)</string>
+    <string name="web_share_description">Une interface pour le partage de fichiers via les navigateurs Web</string>
+    <string name="wifi_connection_notice">1- Ouvrez les paramètres Wi-Fi.
+\n
+\n2- Attendez que « %s » apparaisse dans la liste Wi-Fi.
+\n
+\n3- Sélectionnez-le (%s) et collez le mot de passe (%s).
+\n
+\n4- Revenez ici après la connexion.</string>
+    <string name="split_apk">APK divisé</string>
+    <string name="crash_report_notice">TrebleShot a crashé précédemment.</string>
 </resources>
