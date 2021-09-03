@@ -268,7 +268,7 @@
     <string name="high_priority_notifications">Notificações importantes</string>
     <string name="low_priority_notifications">Notificações de baixa prioridade</string>
     <string name="receive_success_summary">Recebido %s em %s</string>
-    <string name="count_years_short">$d ano</string>
+    <string name="count_years_short">%d ano</string>
     <string name="count_months_short">%d mês</string>
     <string name="count_days_short">%d dia</string>
     <string name="count_hours_short">%d hora</string>
