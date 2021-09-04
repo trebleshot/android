@@ -7,6 +7,10 @@ Send and receive files securely without the internet. Got a question? Check the
 [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md) page or join
 [the discussion group](https://t.me/trebleshot) on Telegram.
 
+## [IMPORTANT] Project Deprecation
+
+This project will no longer receive feature updates or bug fixes. Future updates will only include translation related changes. [Learn more here](https://github.com/orgs/trebleshot/projects).
+
 ## Get it
 
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/)
