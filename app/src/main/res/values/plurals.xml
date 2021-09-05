@@ -46,7 +46,7 @@
     </plurals>
     <plurals name="items">
         <item quantity="one">%d item</item>
-        <item quantity="other">%d 个项目</item>
+        <item quantity="other">%d items</item>
     </plurals>
     <plurals name="tasks">
         <item quantity="one">%d task</item>
