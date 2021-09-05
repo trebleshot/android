@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='UTF-8'?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -14,9 +15,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program; if not, write to the Free Software
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
-<resources>
+  --><resources>
     <plurals name="delete_files_question">
         <item quantity="one">Do you want to delete this file?</item>
         <item quantity="other">Do you want to delete %d files?</item>
@@ -47,7 +46,7 @@
     </plurals>
     <plurals name="items">
         <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
+        <item quantity="other">%d 个项目</item>
     </plurals>
     <plurals name="tasks">
         <item quantity="one">%d task</item>
