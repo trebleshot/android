@@ -19,8 +19,8 @@
     <string name="text_ipAddress">IP-адрес</string>
     <string name="notification">Уведомление</string>
     <string name="notifications_use_sounds">Звуки</string>
-    <string name="app">Приложение</string>
-    <string name="photo">Изображение</string>
+    <string name="app">Приложения</string>
+    <string name="photo">Изображения</string>
     <string name="music">Музыка</string>
     <string name="video">Видео</string>
     <string name="launch">Запустить</string>
@@ -101,7 +101,7 @@
     <string name="text_noNetworkAvailable">Сеть недоступна</string>
     <string name="double_click_exit_notice">Нажмите ещё раз, чтобы выйти</string>
     <string name="create_folder_failure">Папка не может быть создана</string>
-    <string name="storage_permission_summary">Это разрешение позволит TrebleShot читать и записывать файлы на хранилище устройства для принятия и отправки файлов.</string>
+    <string name="storage_permission_summary">Это разрешение разрешит TrebleShot чтение и запись в хранилище устройства, для приёма и отправки файлов.</string>
     <string name="new_file">Новый файл</string>
     <string name="mesg_currentPathUnavailable">Эта папка не может быть использована</string>
     <string name="text_storage">Хранилище</string>
@@ -367,7 +367,7 @@
     <string name="text_applyDarkThemeSummary">Использовать тёмную тему</string>
     <string name="allow">Разрешить</string>
     <string name="butn_telegram_channel">Канал в Telegram</string>
-    <string name="empty_transfers_list">Все передачи появляются здесь</string>
+    <string name="empty_transfers_list">Все передачи отображаются здесь</string>
     <string name="transfers">Передачи</string>
     <string name="butn_connectionDetails">Детали соединения</string>
     <string name="butn_useKnownDevice">Используйте известные устройства</string>
@@ -433,7 +433,7 @@
     <string name="visit_using_browser_notice">Перейдите по этой ссылке в вашем браузере</string>
     <string name="text_webShareInfo">Включите общий доступ к интернету для отправки по отдельности и перейдите по любой веб-ссылке, указанной ниже, на устройстве, подключённом к той же сети.</string>
     <string name="text_dowloadTrebleshotAndroid">Скачать TrebleShot для Android</string>
-    <string name="empty_connections_list">Сети, которые вы подключаете, появляются здесь</string>
+    <string name="empty_connections_list">Сети, которые вы подключаете, отображаются здесь</string>
     <string name="mesg_errorNotAnIpAddress">Неправильный IP-адрес 
 \n(например, 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">Поделиться как APK или ссылка\?</string>
@@ -474,9 +474,9 @@
     <string name="album_art">Обложка альбома</string>
     <string name="artists">Исполнители</string>
     <string name="all_songs">Все песни</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> - это открытый протокол обмена контентом, позволяющий различным типам программного обеспечения общаться и обмениваться контентом. Он безопасен по умолчанию и поставляется с согласованным набором API.
+    <string name="about_uprotocol_content"><b>uprotocol</b> - это открытый протокол обмена, позволяющий различным типам программного обеспечения общаться и обмениваться контентом. Он безопасен по умолчанию и поставляется с согласованным набором API.
 \n
-\nКак разработчик, вы можете легко настроить его и добавить функциональность обмена контентом в свое приложение! </string>
+\nКак разработчик, вы можете легко настроить его и добавить в свое приложение функцию обмена контентом ! </string>
     <string name="about_uprotocol">О uprotocol</string>
     <string name="powered_by_uprotocol" formatted="false">Работает на <b>uprotocol</b></string>
     <string name="starting">Запуск…</string>
@@ -548,7 +548,7 @@
 \n4- Вернитесь сюда после подключения.</string>
     <string name="connect_to_wifi">Подключиться к Wi-Fi</string>
     <string name="all_clients">Все клиенты</string>
-    <string name="empty_clients_list">Клиенты появляются здесь</string>
+    <string name="empty_clients_list">Клиенты отображаются здесь</string>
     <string name="background_service">Фоновая служба</string>
     <string name="visit_web_page">Посетить веб-сайт</string>
     <string name="visit_license_url">Перейти к URL-адресу лицензии</string>
@@ -564,7 +564,7 @@
     <string name="error_content_not_found">Контент не найден</string>
     <string name="error_content_already_exists">Контент уже существует</string>
     <string name="error_content_not_accessible">Недоступный контент</string>
-    <string name="empty_online_clients_list">Онлайн-клиенты появляются здесь</string>
+    <string name="empty_online_clients_list">Онлайн-клиенты отображаются здесь</string>
     <string name="error_no_route_to_host">Недоступный адрес</string>
     <string name="error_socket_connection">Не удалось подключиться к службе</string>
     <string name="error_unrecognized">%s ошибка</string>
@@ -598,4 +598,18 @@
     <string name="remove_transfer_question">Удалить передачу\?</string>
     <string name="sender_wait_for_receiver_notice">Получатели могут выбрать вас здесь</string>
     <string name="add_storage_access">Добавить доступ к хранилищу…</string>
+    <string name="shared_by_other_apps">Роздано другими приложениями</string>
+    <string name="image_bucket_thumbnail">Корзина миниатюр изображений</string>
+    <string name="selections">Выделение</string>
+    <string name="shared_texts">Тексты, которыми делились</string>
+    <string name="compose">Составление</string>
+    <string name="sender_accepted">Отправитель принят</string>
+    <string name="invalidate">Аннулировать</string>
+    <string name="received_using_web_share">Получено с помощью функции \"Поделиться через браузер\"</string>
+    <string name="receiving_using_web_web_share">Получение с помощью функции \"Поделиться через браузер\"</string>
+    <string name="sharing_on_web">Обмен в Интернете</string>
+    <string name="share_on_web">Поделиться в Интернете</string>
+    <string name="waiting_receiver_approval_notice">Запустится после подтверждением получателем…</string>
+    <string name="credentials_mismatch_notice">Аннулировать сертификат \"%s\" для связи с ним.</string>
+    <string name="rejecting">Отклонение…</string>
 </resources>
