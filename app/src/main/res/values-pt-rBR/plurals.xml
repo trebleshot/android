@@ -30,11 +30,11 @@
     </plurals>
     <plurals name="seconds_ago">
         <item quantity="one">Um segundo atrás</item>
-        <item quantity="other">Há %d segundos</item>
+        <item quantity="other">%d segundos atrás</item>
     </plurals>
     <plurals name="minutes_ago">
         <item quantity="one">Um minuto atrás</item>
-        <item quantity="other">Há %d minutos</item>
+        <item quantity="other">%d minutos atrás</item>
     </plurals>
     <plurals name="text_fileDeletionCompleted">
         <item quantity="one">%d arquivo foi excluído</item>
@@ -49,8 +49,8 @@
         <item quantity="other">Compartilhando com %d dispositivos</item>
     </plurals>
     <plurals name="albums">
-        <item quantity="one">%d album</item>
-        <item quantity="other">%d albuns</item>
+        <item quantity="one">%d álbum</item>
+        <item quantity="other">%d álbuns</item>
     </plurals>
     <plurals name="tasks">
         <item quantity="one">%d tarefa</item>
