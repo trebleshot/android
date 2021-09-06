@@ -139,4 +139,10 @@
     <string name="mesg_textShareLimit">ഒരു സമയം ഒരു ടെക്സ്റ്റ് മാത്രമേ പങ്കിടാന്‍ കഴിയു</string>
     <string name="save">സുക്ഷിക്കുക</string>
     <string name="ques_saveAnyway">ഏതുവിധേനയും സൂക്ഷിക്കട്ടെ\?</string>
+    <string name="allow">അനുവദിക്കുക</string>
+    <string name="changelog">എന്താണ്ല്ലാം മാറിയത്</string>
+    <string name="storage_path_unavailable_notice">ആവശ്യമുള്ള ഫോൾഡർ ആക്സസ് ചെയ്യാനാകാത്തതിനാൽ സ്ഥിരസ്ഥിതി ഫോൾഡറിലേക്ക് ഫയലുകൾ സംരക്ഷിക്കുന്നത്</string>
+    <string name="retry">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="pause">ഇടയില് നിർത്തുക</string>
+    <string name="open">തുറക്കുക</string>
 </resources>
