@@ -251,7 +251,7 @@
     <string name="size">大小</string>
     <string name="text_trustZoneDeviceNotice">当信任域开启时自动接收传入的文件</string>
     <string name="text_allowingToConnectNotice">允许来自该设备的连接</string>
-    <string name="preferences_reset">重置回默认值</string>
+    <string name="preferences_reset">重置为默认值</string>
     <string name="preferences_reset_notice">这将恢复默认设置</string>
     <string name="text_taskCompleted">任务已完成</string>
     <string name="deleting_files_notice">正在删除已选中的文件</string>
@@ -481,4 +481,50 @@
     <string name="error_not_trusted_notice">您需要被该客户端信任</string>
     <string name="trust">信任</string>
     <string name="remove_transfer_question">移除传输？</string>
+    <string name="no_artists">此处没有艺术家</string>
+    <string name="no_albums">此处没有专辑</string>
+    <string name="artists">艺术家</string>
+    <string name="albums">专辑</string>
+    <string name="about_uprotocol">关于 uprotocol</string>
+    <string name="powered_by_uprotocol" formatted="false">由 <b>uprotocol</b> 提供技术支持</string>
+    <string name="folder_name">文件夹名称</string>
+    <string name="nickname">昵称</string>
+    <string name="author">作者</string>
+    <string name="authors">作者</string>
+    <string name="scan">扫描</string>
+    <string name="generate">生成</string>
+    <string name="apps">应用程序</string>
+    <string name="manage_clients">管理客户端</string>
+    <string name="folders">文件夹</string>
+    <string name="run_in_background">在后台运行</string>
+    <string name="error_protocol_unknown">未知的协议错误</string>
+    <string name="error_communication_unknown">未知的通信错误</string>
+    <string name="client_model">型号</string>
+    <string name="client_offline_notice">远程客户端不可用</string>
+    <string name="connect_to_client">连接到客户端</string>
+    <string name="enter_wifi_password_notice">粘贴密码“%s”</string>
+    <string name="connect_to_wifi_notice">连接到“%s”</string>
+    <string name="wifi_password">Wi-Fi 密码</string>
+    <string name="copy_password_and_open_settings">复制密码并打开设置</string>
+    <string name="wifi_connection_notice">1- 打开 Wi-Fi 设置。
+\n
+\n2- 等待“%s”出现在 Wi-Fi 列表上。
+\n
+\n3- 选择它（%s）并粘贴密码（%s）。
+\n
+\n4- 连接后返回这里。</string>
+    <string name="connect_to_wifi">连接到 Wi-Fi</string>
+    <string name="background_service">后台服务</string>
+    <string name="join_us">参与进来</string>
+    <string name="license">许可协议</string>
+    <string name="enter_address">输入地址</string>
+    <string name="stop_all">全部停止</string>
+    <string name="error_no_route_to_host">地址不可达</string>
+    <string name="error_socket_connection">无法连接到服务</string>
+    <string name="error_unknown">未知错误</string>
+    <string name="add_new_client">添加新客户端</string>
+    <string name="choose_client">选择客户端</string>
+    <string name="transfer_history">传输历史</string>
+    <string name="follow_system_theme">跟随系统</string>
+    <string name="ui_theme">主题</string>
 </resources>
