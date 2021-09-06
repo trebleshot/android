@@ -48,4 +48,16 @@
         <item quantity="one">നിങ്ങള്‍ക്ക് ഈ ഫയല്‍ നീക്കം ചെയ്യണോ\?</item>
         <item quantity="other">നിങ്ങള്‍ക്ക് %d ഫയലുകള്‍ നീക്കം ചെയ്യണോ\?</item>
     </plurals>
+    <plurals name="albums">
+        <item quantity="one">%d ആൽബം</item>
+        <item quantity="other">%d ആൽബങ്ങൾ</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d ചുമതല</item>
+        <item quantity="other">%d ചുമതലകൾ</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">%d ഇനം</item>
+        <item quantity="other">%d ഇനങ്ങൾ</item>
+    </plurals>
 </resources>
