@@ -25,19 +25,19 @@
     <string name="cancel_receiving">Avbryt mottak</string>
     <string name="text_fileReceived">Filen har blitt mottatt</string>
     <string name="butn_scan">Skann</string>
-    <string name="empty_list">Ingen elementer</string>
+    <string name="empty_list">Listen er tom</string>
     <string name="text_developerMode">Utviklermodus</string>
     <string name="text_developerModeSummary">Skrur av brukeroppsettet</string>
     <string name="text_deviceName">Enhetsnavn</string>
     <string name="nickname_description">Navnet vil bli vist på andre enheter</string>
     <string name="text_deviceNameTitle">Skriv inn enhetsnavnet</string>
     <string name="mesg_formatNotSupported">Ustøttet format</string>
-    <string name="send_file_failure">Kunne ikke sende fil. %s</string>
+    <string name="send_file_failure">Kunne ikke sende «%s»</string>
     <string name="mesg_fileSent">%s har blitt sendt</string>
     <string name="mesg_fileSendCancelled">Forsendelse av %s har blitt avbrutt</string>
     <string name="mesg_fileNameChanged">Lagrer som %s</string>
     <string name="receive_file_success">Filen %s har blitt mottatt</string>
-    <string name="receive_file_failure">Kunne ikke motta «%s».</string>
+    <string name="receive_file_failure">Kunne ikke motta «%s»</string>
     <string name="mesg_fileReceiveCancelled">Avbrøt mottak av %s</string>
     <string name="receive_files_success">Filer mottatt</string>
     <string name="text_deviceList">Enheter</string>
@@ -209,7 +209,7 @@
     <string name="butn_connectionList">Tilkoblinger</string>
     <string name="text_automaticNetworkConnectionFailed">Ingen av tilkoblingene fungerte for enheten. Dens adresse kan ha endret seg. Prøv å koble til nettverket mens TrebleShot er åpent.</string>
     <string name="text_automaticNetworkConnectionOngoing">TrebleShot vil avgjøre for deg</string>
-    <string name="retry_receiving">Prøv alle på nytt</string>
+    <string name="retry_receiving">Gjenta mottaksforsøk</string>
     <string name="request">Spør</string>
     <string name="text_permissionRequest">Tilgangsforespørsel</string>
     <string name="storage_permission">Lagringstilgang</string>
@@ -272,8 +272,8 @@
     <string name="name">Navn</string>
     <string name="date">Dato</string>
     <string name="size">Størrelse</string>
-    <string name="preferences_reset">Tilbakestill til forvalg</string>
-    <string name="preferences_reset_question">Tilbakestill til forvalg?</string>
+    <string name="preferences_reset">Tilbakestill innstillinger</string>
+    <string name="preferences_reset_question">Tilbakestill alt\?</string>
     <string name="preferences_reset_notice">Dette vil gjenopprette forvalgte innstillinger</string>
     <string name="text_taskCompleted">Oppgave fullført</string>
     <string name="deleting_files_notice">Sletter valgte filer</string>
@@ -289,8 +289,8 @@
     <string name="mesg_locationPermissionRequiredSelfHotspot">Tillat TrebleShot å søke etter og opprette lokale trådløsnett</string>
     <string name="mesg_locationDisabledSelfHotspot">Innvilg tilgang til plassering for å vise søkeresultater og opprette lokalt trådløsnett</string>
     <string name="mesg_scanningDevicesSelfHotspot">Ser etter enheter på et lokalt TrebleShot-nettverk</string>
-    <string name="starting_hotspot_notice">Stopper det lokale TrebleShot-trådløsnettet</string>
-    <string name="stopping_hotspot_notice">Starter det lokale TrebleShot-trådløsnettet</string>
+    <string name="starting_hotspot_notice">Stopper lokalt trådløsnett</string>
+    <string name="stopping_hotspot_notice">Starter lokalt trådløsnett …</string>
     <string name="check">Velg alle</string>
     <string name="uncheck">Angre alt</string>
     <string name="text_fileRoot">Filrot</string>
@@ -348,7 +348,7 @@
     <string name="copy_here">Kopier her</string>
     <string name="text_qrAllowTrustZone">TrustZone for QR-kode</string>
     <string name="text_qrAllowTrustZoneSummary">Tillat TrustZone for tilkoblinger med QR-kode</string>
-    <string name="help_translate">Hjelp til i oversettelsen</string>
+    <string name="help_translate">Oversettelse</string>
     <string name="text_contributors">Muliggjort av</string>
     <string name="butn_gridSize">Rutenettstørrelse</string>
     <string name="butn_singleRow">Enkelt rad</string>
@@ -393,7 +393,7 @@
     <string name="interrupted_left_notice">Ingen ventende overføring gjenstår. For å gjenoppta forstyrrede filer, bruk \"Prøv alle på nytt\"-valget.</string>
     <string name="storage_path_unavailable_notice">Filer vil bli lagret i forvalgt mappe, siden den angitte mappen ikke er tilgjengelig nå.
 \n
-\n %s</string>
+\n%s</string>
     <string name="butn_changelog">Endringslogg</string>
     <string name="changelog">Endringslogg</string>
     <string name="mesg_versionUpdatedChangelog">Du har oppgradert TrebleShot til en nyere versjon, ønsker du å se hva som har endret seg siden du installerte forrige versjon?</string>
@@ -460,11 +460,11 @@
     <string name="butn_connectionTest">Tilkoblingstest</string>
     <string name="count_milliseconds_short">%d ms</string>
     <string name="butn_revokePin">Tilbakekall PIN</string>
-    <string name="use_recommended_fonts">Bruk anbefalt skrift</string>
+    <string name="use_recommended_fonts">Anbefalt skrift</string>
     <string name="use_recommended_fonts_notice">Bruk medfølgende tilpasset skrift</string>
     <string name="waiting">Venter …</string>
-    <string name="theme_optimize">Optimaliser for AMOLED-skjermer</string>
-    <string name="theme_optimize_summary">Bruk mørkere farger</string>
+    <string name="theme_optimize">AMOLED</string>
+    <string name="theme_optimize_summary">Bruker mindre effekt</string>
     <string name="butn_enterIpAddress">Skriv inn IP-adresse</string>
     <string name="web_share">Del via nettleser</string>
     <string name="butn_asApk">Som APK</string>
@@ -472,7 +472,7 @@
     <string name="text_linkTrebleshot">Del filer med TrebleShot. Last ned her: %s</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">eller</string>
-    <string name="visit_using_browser_notice">Besøk denne lenken i din nettleser</string>
+    <string name="visit_using_browser_notice">Besøk denne lenken med nettleseren din</string>
     <string name="text_dowloadTrebleshotAndroid">Last ned TrebleShot for Android</string>
     <string name="empty_connections_list">Nettverk du kobler til vises her</string>
     <string name="mesg_errorNotAnIpAddress">Ikke en IP-adresse
@@ -515,7 +515,7 @@
     <string name="client_model">Modell</string>
     <string name="client_details">Klientdetaljer</string>
     <string name="verify_client">Bekreft klient</string>
-    <string name="wifi_disabled_notice">Wi-Fi er avskrudd</string>
+    <string name="wifi_disabled_notice">Wi-Fi av</string>
     <string name="not_connected_yet_notice">Ikke tilkoblet enda</string>
     <string name="wifi_password">Wi-Fi-passord</string>
     <string name="connect_to_wifi">Koble til Wi-Fi</string>
@@ -571,7 +571,7 @@
     <string name="root_folder">Rotmappe</string>
     <string name="error_communication_security">En sikkerhetsfeil oppstod</string>
     <string name="deny">Avslå</string>
-    <string name="using_qr_code">QR-kode</string>
+    <string name="using_qr_code">Bruker QR-kode</string>
     <string name="wifi_connection_notice">1- Åpne Wi-Fi-innstillingene.
 \n
 \n2- Vent til «%s» vises i Wi-Fi-listen.

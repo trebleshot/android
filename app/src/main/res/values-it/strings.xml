@@ -78,7 +78,7 @@
     <string name="mesg_scanCompleted">Scansione completata</string>
     <string name="text_autoStart">Avvio Automatico</string>
     <string name="text_autoStartSummary">Attiva la comunicazione quando viene rilevata una connessione</string>
-    <string name="app">Applicazione</string>
+    <string name="app">App</string>
     <string name="photo">Immagine</string>
     <string name="music">Musica</string>
     <string name="video">Video</string>
@@ -142,7 +142,7 @@
     <string name="create_folder">Crea Cartella</string>
     <string name="error_file_already_exists">Il file esiste già</string>
     <string name="create_folder_failure">Impossibilr creare la cartella</string>
-    <string name="storage_permission_summary">Questa autorizzazione consente a TrebleShot di leggere e scrivere sulla memoria del dispositivo per ricevere e condividere file.</string>
+    <string name="storage_permission_summary">Consente la lettura e la scrittura sulla memoria del dispositivo per condividere e ricevere file.</string>
     <string name="settings">Impostazioni</string>
     <string name="butn_selectThis">Seleziona Questo</string>
     <string name="new_file">Nuovo File</string>
@@ -269,7 +269,7 @@
     <string name="butn_queueCounted">Coda (%d)</string>
     <string name="mesg_updateDownloadComplete">Aggiornamento ricevuto e salvato nei file ricevuti</string>
     <string name="empty_files_list">Nessun file presente</string>
-    <string name="empty_photos_list">Nessuna foto presente</string>
+    <string name="empty_photos_list">Nessuna immagine presente</string>
     <string name="empty_apps_list">Nessuna app presente</string>
     <string name="empty_video_list">Nessun video presente</string>
     <string name="text_listEmptyPendingTransfer">I trasferimenti in attesa appariranno qui</string>
@@ -475,7 +475,7 @@
     <string name="mesg_qrScannerDefaultMode">Ripristina le azioni predefinite per i codici QR</string>
     <string name="show_as_qr_code">Mostra come Codice QR</string>
     <string name="selections">Selezionati</string>
-    <string name="nothing_worked_rhetorical">Nulla ha funzionato\?</string>
+    <string name="nothing_worked_rhetorical">Non funziona\?</string>
     <string name="pick_the_sender">Scegli Mittente</string>
     <string name="shared_by_other_apps">Condiviso da Altre App</string>
     <string name="status_icon">Icona di stato</string>
@@ -502,7 +502,7 @@
 \n
 \nCome sviluppatore, puoi implementarlo facilmente nella tua app, aggiungendo funzionalità di condivisione dei contenuti! </string>
     <string name="about_uprotocol">Informazioni su uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Realizzato da <b>uprotocol</b></string>
+    <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
     <string name="sender_wait_for_receiver_notice">I destinatari possono sceglierti qui</string>
     <string name="starting">Inizializzazione…</string>
     <string name="sender_finishing">Finalizzazione…</string>
@@ -532,8 +532,8 @@
     <string name="apps">Applicazioni</string>
     <string name="manage_clients">Gestisci Client</string>
     <string name="error_no_activity_to_view">Impossibile trovare un\'app con cui aprire il contenuto</string>
-    <string name="granted">Concesso</string>
-    <string name="grant">Concedi</string>
+    <string name="granted">Consentita</string>
+    <string name="grant">Consenti</string>
     <string name="change_picture">Cambia Immagine</string>
     <string name="remove_picture">Rimuovi Immagine</string>
     <string name="edit_profile">Modifica Profilo</string>

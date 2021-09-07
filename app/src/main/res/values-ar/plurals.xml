@@ -72,4 +72,36 @@
         <item quantity="many">هل تريد حذف %d ملف؟</item>
         <item quantity="other">هل تريد حذف هذا الملف؟</item>
     </plurals>
+    <plurals name="albums">
+        <item quantity="zero">%d ألبومات</item>
+        <item quantity="one">ألبوم واحد</item>
+        <item quantity="two">ألبومَين</item>
+        <item quantity="few">%d ألبومًا</item>
+        <item quantity="many">%d ألبومًا</item>
+        <item quantity="other">%d ألبومات</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="zero">%d عناصر</item>
+        <item quantity="one">عنصر واحد</item>
+        <item quantity="two">عنصرَين</item>
+        <item quantity="few">%d عنصرًا</item>
+        <item quantity="many">%d عنصرًا</item>
+        <item quantity="other">%d عناصر</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="zero">تم تحديد %d ملفات</item>
+        <item quantity="one">تم تحديد ملف واحد</item>
+        <item quantity="two">تم تحديد ملفين</item>
+        <item quantity="few">تم تحديد %d ملفا</item>
+        <item quantity="many">تم تحديد %d ملفا</item>
+        <item quantity="other">تم تحديد %d ملفات</item>
+    </plurals>
+    <plurals name="receive_files_success_summary">
+        <item quantity="zero">تم استلام %d ملفات</item>
+        <item quantity="one">تم استلام ملف واحد</item>
+        <item quantity="two">تم استلام ملفّين</item>
+        <item quantity="few">تم استلام %d ملفات</item>
+        <item quantity="many">تم استلام %d ملفا</item>
+        <item quantity="other">تم استلام %d ملفا</item>
+    </plurals>
 </resources>
