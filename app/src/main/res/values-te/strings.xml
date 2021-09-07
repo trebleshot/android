@@ -17,8 +17,8 @@
     <string name="package_install_conflicted">ప్యాకేజీ మరొక ప్యాకేజీతో విభేదిస్తుంది</string>
     <string name="package_install_blocked">యాప్ బ్లాక్ చేయబడినందున ప్యాకేజీ ఇన్‌స్టాలేషన్ విఫలమైంది</string>
     <string name="package_install_aborted">ప్యాకేజీ సంస్థాపన నిలిపివేయబడింది</string>
-    <string name="package_install_failure">ప్యాకేజీని ఇన్‌స్టాల్ చేయడం విఫలమైంది</string>
-    <string name="package_install_success">ప్యాకేజీ విజయవంతంగా ఇన్‌స్టాల్ చేయబడింది</string>
+    <string name="package_install_failure">ప్యాకేజీని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</string>
+    <string name="package_install_success">ప్యాకేజీ ఇన్‌స్టాల్ చేయబడింది</string>
     <string name="app_icon">యాప్ చిహ్నం</string>
     <string name="install_package">ప్యాకేజీని ఇన్‌స్టాల్ చేయండి</string>
     <string name="image_bucket_thumbnail">Image bucket thumbnail</string>
@@ -32,16 +32,16 @@
     <string name="about_uprotocol">uprotocol గురించి</string>
     <string name="powered_by_uprotocol" formatted="false"><b> uprotocol </b> ద్వారా ఆధారితం</string>
     <string name="sender_wait_for_receiver_notice">స్వీకర్తలు మిమ్మల్ని ఇక్కడ ఎంచుకోవచ్చు</string>
-    <string name="starting">ప్రారంభిస్తోంది</string>
-    <string name="sender_finishing">ముగిస్తుంది</string>
+    <string name="starting">ప్రారంభిస్తోంది…</string>
+    <string name="sender_finishing">ముగిస్తుంది…</string>
     <string name="sender_accepted">పంపేవారు అంగీకరించారు</string>
     <string name="sender_not_expecting">%s ఏమీ పంపడం లేదు</string>
     <string name="receiver_pending">స్వీకరించడం ప్రారంభించడానికి పంపేవారిని ఎంచుకోండి</string>
-    <string name="rejecting">తిరస్కరిస్తోంది</string>
+    <string name="rejecting">తిరస్కరిస్తోంది…</string>
     <string name="folder_name">ఫోల్డర్ పేరు</string>
     <string name="error_empty_field">ఫీల్డ్ ఖాళీగా ఉండకూడదు</string>
     <string name="folder_not_writable">ఫోల్డర్ రైట్-ప్రొటెక్ట్ చేయబడింది</string>
-    <string name="storage_folder_notice">కంటెంట్‌లను సేవ్ చేయడానికి ఫోల్డర్</string>
+    <string name="storage_folder_notice">ఇక్కడ సేవ్ చెయ్యండి…</string>
     <string name="change_storage_folder">నిల్వ ఫోల్డర్‌ను మార్చండి</string>
     <string name="storage_folder">నిల్వ ఫోల్డర్</string>
     <string name="clear_storage_list">నిల్వ జాబితాను చెరిపివేయండి</string>
@@ -49,10 +49,10 @@
     <string name="root_folder">మూలం</string>
     <string name="nickname">మారుపేరు</string>
     <string name="error_client_no_address">క్లయింట్‌కు చిరునామా లేదు (మాన్యువల్‌గా కనెక్ట్ చేయడానికి ప్రయత్నించండి)</string>
-    <string name="error_communication_unknown">తెలియని కమ్యూనికేషన్ లోపం సంభవించింది</string>
+    <string name="error_communication_unknown">తెలియని కమ్యూనికేషన్ లోపం</string>
     <string name="outgoing">అవుట్గోయింగ్</string>
     <string name="incoming">ఇన్‌కమింగ్</string>
-    <string name="waiting_receiver_approval_notice">రిసీవర్ ఆమోదం కోసం వేచి ఉంది</string>
+    <string name="waiting_receiver_approval_notice">రిసీవర్ ఆమోదం తరువాత మొదలవుతుంది…</string>
     <string name="client_model">మోడల్</string>
     <string name="client_details">క్లయింట్ వివరాలు</string>
     <string name="verify_client">క్లయింట్‌ని ధృవీకరించండి</string>
@@ -67,12 +67,12 @@
     <string name="connect_to_wifi_notice">\"%s\"కి కనెక్ట్ చేయండి</string>
     <string name="notifications_instructive">బోధనాత్మక నోటిఫికేషన్‌లు</string>
     <string name="wifi_password">వైఫై పాస్‌వర్డ్</string>
-    <string name="copy_password_and_open_settings">పాస్‌వర్డ్‌ని కాపీ చేయండి &amp; సెట్టింగులను ఓపెన్ చేయండి</string>
-    <string name="wifi_connection_notice">1- వైఫై సెట్టింగ్‌లను తెరవండి
+    <string name="copy_password_and_open_settings">పాస్‌వర్డ్‌ని కాపీ చేయండి మరియు సెట్టింగులను ఓపెన్ చేయండి</string>
+    <string name="wifi_connection_notice">1- వైఫై సెట్టింగ్‌లను తెరవండి.
 \n
-\n2- వైఫై జాబితాలో \'%s\' కనిపించే వరకు వేచి ఉండండి
+\n2- వైఫై జాబితాలో \"%s\" కనిపించే వరకు వేచి ఉండండి.
 \n
-\n3- దాన్ని (%s) ఎంచుకోండి మరియు పాస్‌వర్డ్ (%s) ను అతికించండి
+\n3- దాన్ని (%s) ఎంచుకోండి మరియు పాస్‌వర్డ్ (%s) ను అతికించండి.
 \n
 \n4- కనెక్ట్ అయిన తర్వాత ఇక్కడకు తిరిగి రండి</string>
     <string name="connect_to_wifi">వైఫైకి కనెక్ట్ చేయండి</string>
@@ -80,7 +80,7 @@
     <string name="edit_profile">ప్రొఫైల్‌ను సవరించండి</string>
     <string name="empty_clients_list">క్లయింట్లు ఇక్కడ కనిపిస్తాయి</string>
     <string name="background_service">నేపథ్య సేవ</string>
-    <string name="visit_web_page">వెబ్ పేజీని సందర్శించండి</string>
+    <string name="visit_web_page">వెబ్‌సైట్‌ని సందర్శించండి</string>
     <string name="visit_license_url">లైసెన్స్ URL ని సందర్శించండి</string>
     <string name="join_us">మాతో చేరండి</string>
     <string name="shared_texts">పంచుకున్న వచనాలు</string>
@@ -91,17 +91,17 @@
     <string name="tap_to_launch_notice">ప్రారంభించడానికి నొక్కండి</string>
     <string name="error_content_not_found">కంటెంట్ కనుగొనబడలేదు</string>
     <string name="error_content_already_exists">కంటెంట్ ఇప్పటికే ఉంది</string>
-    <string name="error_content_not_accessible">కంటెంట్ అందుబాటులో లేదు</string>
-    <string name="error_no_route_to_host">ఈ చిరునామాను చేరుకోలేము</string>
-    <string name="error_socket_connection">సేవకు కనెక్ట్ చేయడం విఫలమైంది</string>
-    <string name="error_unrecognized">%s లోపం సంభవించింది</string>
-    <string name="error_unknown">ఏదో తెలియని లోపం సంభవించింది</string>
+    <string name="error_content_not_accessible">అందుబాటులో లేని కంటెంట్</string>
+    <string name="error_no_route_to_host">చేరుకోలేని చిరునామాను</string>
+    <string name="error_socket_connection">సేవకు కనెక్ట్ కాలేదు</string>
+    <string name="error_unrecognized">%s లోపం</string>
+    <string name="error_unknown">ఏదో తెలియని లోపం</string>
     <string name="error_different_client">కనెక్ట్ చేయబడిన క్లయింట్ భిన్నంగా ఉన్నారు</string>
-    <string name="credentials_mismatch_notice">\'%s\'తొ కమ్యూనికేట్ చేయడానికి ఆధారాల చెల్లుబాటు అవసరం.</string>
+    <string name="credentials_mismatch_notice">\"%s\"తొ కమ్యూనికేట్ చేయడానికి దాని సర్టిఫికెట్‌ని ఇన్వాలిడేట్ చేయండి</string>
     <string name="credentials_mismatch">ఆధారాలు సరిపోలడం లేదు</string>
-    <string name="host_address_invalid_notice">దయచేసి ఇంటర్నెట్ చిరునామాను నమోదు చేయండి!</string>
+    <string name="host_address_invalid_notice">దయచేసి ఇంటర్నెట్ చిరునామాను ఇక్కడ నమోదు చేయండి.</string>
     <string name="set_up_network_notice">హాట్‌స్పాట్‌ను సెటప్ చేయండి లేదా వైఫైకి కనెక్ట్ చేయండి</string>
-    <string name="qr_code_image_notice">QR కోడ్ ఇక్కడ కనిపిస్తుంది!</string>
+    <string name="qr_code_image_notice">ఒక QR కోడ్ ఇక్కడ కనిపిస్తుంది.</string>
     <string name="nothing_worked_rhetorical">ఏమీ పని చేయలేదా\?</string>
     <string name="generate_qr_code">QR కోడ్‌ని రూపొందించండి</string>
     <string name="add_new_client">కొత్త క్లయింట్‌ను జోడించండి</string>
@@ -110,15 +110,15 @@
     <string name="choose_client">క్లయింట్‌ని ఎంచుకోండి</string>
     <string name="transfer_history">బదిలీ చరిత్ర</string>
     <string name="compose">కూర్చండి</string>
-    <string name="delete_empty_text_question">మీరు ఖాళీ టెక్స్ట్‌ని తొలగించాలనుకుంటున్నారా\?</string>
+    <string name="delete_empty_text_question">ఖాళీ టెక్స్ట్‌ని తొలగించాలా\?</string>
     <string name="split_apk">Split APK</string>
     <string name="battery_saver_theme">బ్యాటరీ సేవర్ ద్వారా నిర్ణయించబడుతుంది</string>
-    <string name="follow_system_theme">సిస్టమ్ థీమ్‌ను అనుసరించు</string>
+    <string name="follow_system_theme">సిస్టమ్‌ను అనుసరించు</string>
     <string name="light_theme">లేత</string>
     <string name="dark_theme">ముదురు</string>
     <string name="ui_theme">థీమ్</string>
     <string name="error_unknown_host">ఈ హోస్ట్ చిరునామాను పరిష్కరించడం సాధ్యపడలేదు!</string>
-    <string name="crash_report_notice">ట్రెబుల్‌షాట్ మునుపటి సెషన్‌లో క్రాష్‌ను ఎదుర్కొంది.</string>
+    <string name="crash_report_notice">ట్రెబుల్‌షాట్ మునుపటి సారి క్రాష్‌ అయ్యింది.</string>
     <string name="crash_report">క్రాష్ నివేదిక</string>
     <string name="clients">క్లైయింట్లు</string>
     <string name="delete_received_files_question">అలాగే స్వికరించిన ఫైళ్ళను డిస్క్ నుండి తొలగించండి</string>
@@ -126,15 +126,15 @@
     <string name="save_text_success">వచనం సేవ్ చేయబడింది</string>
     <string name="unrecognized_qr_code_notice">గుర్తించబడని కోడ్</string>
     <string name="vpn_interface">VPN సర్వర్</string>
-    <string name="empty_connections_list">మీరు కనెక్ట్ చేసే నెట్‌వర్క్‌లు ఇక్కడ కనిపిస్తాయి</string>
-    <string name="visit_using_browser_notice">మీ బ్రౌజర్‌తో ఈ లింక్‌ని సందర్శించండి</string>
+    <string name="empty_connections_list">మీరు కనెక్ట్ చేసిన నెట్‌వర్క్‌లు ఇక్కడ కనిపిస్తాయి</string>
+    <string name="visit_using_browser_notice">మీ వెబ్ బ్రౌజర్‌తో ఈ లింక్‌ని సందర్శించండి</string>
     <string name="web_share">వెబ్ షేర్</string>
     <string name="error_not_trusted_notice">క్లయింట్ తప్పనిసరిగా మిమ్మల్ని విశ్వసించాలి</string>
-    <string name="theme_optimize_summary">ముదురు రంగులను ఉపయోగించు</string>
-    <string name="theme_optimize">AMOLED స్క్రీన్‌ల కోసం ఆప్టిమైజ్ చేయండి</string>
-    <string name="waiting">వేచి ఉంది</string>
+    <string name="theme_optimize_summary">తక్కువ శక్తిని ఉపయొగించు</string>
+    <string name="theme_optimize">AMOLED స్క్రీన్‌</string>
+    <string name="waiting">వేచి ఉంది…</string>
     <string name="use_recommended_fonts_notice">సరఫరా చేయబడిన అనుకూల ఫాంట్‌ని ఉపయోగింంచండి</string>
-    <string name="use_recommended_fonts">సిఫార్సు చేసిన ఫాంట్‌ను వర్తించండి</string>
+    <string name="use_recommended_fonts">సిఫార్సు చేసిన ఫాంట్‌</string>
     <string name="count_milliseconds_short">%d మిల్లీ సెకన్లు</string>
     <string name="introduction_set_up_profile">మీ ప్రొఫైల్‌ని అమర్చుకోండి</string>
     <string name="introduction_finished">అంతా సిధంగా ఉంది!</string>
@@ -164,7 +164,7 @@
     <string name="empty_transfers_list">అన్ని బదిలీలు ఇక్కడ కనిపిస్తాయి</string>
     <string name="allow">అనుమతించు</string>
     <string name="changelog">మార్పు జాబితా</string>
-    <string name="storage_path_unavailable_notice">మీకు కావలసిన ఫోల్డర్ అందుబాటులో లేదు. ఫైళ్ళు డిఫాల్ట్ ఫోల్డర్‌కు సేవ్ చేయబడతాయి.
+    <string name="storage_path_unavailable_notice">మీకు కావలసిన ఫోల్డర్ అందుబాటులో లేనందున ఫైళ్ళు డిఫాల్ట్ ఫోల్డర్‌కు సేవ్ చేయబడతాయి.
 \n
 \n%s</string>
     <string name="retry">మళ్లీ ప్రయత్నించు</string>
@@ -183,7 +183,7 @@
     <string name="files">ఫైళ్లు</string>
     <string name="home">హోమ్</string>
     <string name="photo">ఫోటో</string>
-    <string name="help_translate">మాకు అనువదించడానికి సహాయం చేయండి</string>
+    <string name="help_translate">అనువాదం</string>
     <string name="copy_here">ఇక్కడ కాపీ చేయండి</string>
     <string name="rename">పేరు మార్చు</string>
     <string name="notification_settings_summary">నోటిఫికేషన్ సెట్టింగ్‌లను తెరవండి</string>
@@ -227,8 +227,8 @@
     <string name="select_none">ఏది కాదు</string>
     <string name="select_all">అన్ని ఎంచుకోండి</string>
     <string name="client_not_supported_notice">దయచేసి మద్దతు ఉన్న సంస్కరణకు అప్‌గ్రేడ్ చేయండి!</string>
-    <string name="uncheck">చెక్ చేయబడలేదు</string>
-    <string name="check">చెక్ చేయబడింది</string>
+    <string name="uncheck">ఆఫ్‌లొ ఉంది</string>
+    <string name="check">ఆన్‌లొ ఉంది</string>
     <string name="stopping_hotspot_notice">హాట్‌స్పాట్ ప్రారంభిస్తోంది</string>
     <string name="starting_hotspot_notice">హాట్‌స్పాట్‌ను ఆపివేస్తోంది</string>
     <string name="location_settings">స్థానం</string>
@@ -340,28 +340,28 @@
     <string name="grant">మంజూరు చేయి</string>
     <string name="change_picture">చిత్రాన్ని మార్చండి</string>
     <string name="remove_picture">చిత్రాన్ని తీసివేయండి</string>
-    <string name="warning_permissions_not_accepted">మీరు ఇంకా అనుమతులను సెటప్ చేయలేదు!</string>
+    <string name="warning_permissions_not_accepted">మీరు ముందు అనుమతులను సెటప్ చేయండి</string>
     <string name="received_using_web_share">వెబ్ షేర్ ఉపయోగించి స్వీకరించబడింది</string>
     <string name="receiving_using_web_web_share">వెబ్ షేర్ ఉపయోగించి స్వీకరిస్తుంది</string>
-    <string name="send_using_web_share_success_notice">విజయవంతంగా \'%s\' పంపబడింది</string>
-    <string name="web_share_empty_notice">ఇంకా ఏదీ షేర్ చేయబడలేదు. యాప్‌లో ఏదైనా షేర్ చేసి, తిరిగి ఇక్కడికి రండి!</string>
+    <string name="send_using_web_share_success_notice">\"%s\" పంపబడింది</string>
+    <string name="web_share_empty_notice">ముందు యాప్‌లొ ఏదైనా షేర్ చేయండి.</string>
     <string name="folders">ఫోల్డర్లు</string>
     <string name="images">చిత్రాలు</string>
     <string name="videos">వీడియోలు</string>
     <string name="songs">పాటలు</string>
     <string name="sharing_on_web">వెబ్‌లో షేర్ చేస్తోంది</string>
     <string name="share_on_web">వెబ్‌లో షేర్ చేయండి</string>
-    <string name="web_share_description">బ్రౌజర్‌ల ద్వారా ఫైల్ షేరింగ్ కోసం ఒక ఇంటర్‌ఫేస్</string>
-    <string name="preparing">సిద్ధమవుతోంది</string>
+    <string name="web_share_description">వెబ్ బ్రౌజర్‌ల ద్వారా ఫైల్ షేరింగ్ కోసం ఒక ఇంటర్‌ఫేస్</string>
+    <string name="preparing">సిద్ధమవుతోంది…</string>
     <string name="selections">ఎంపికలు</string>
     <string name="run_in_background">నేపథ్యంలో అమలు చేయండి</string>
     <string name="completed">పూర్తయింది</string>
-    <string name="error_protocol_unknown">తెలియని ప్రోటోకాల్ లోపం సంభవించింది</string>
+    <string name="error_protocol_unknown">తెలియని ప్రోటోకాల్ లోపం</string>
     <string name="empty_online_clients_list">ఆన్‌లైన్ క్లయింట్లు ఇక్కడ కనిపిస్తారు</string>
     <string name="notifications_use_lights_summary">లైట్లను ఉపయోగించండి</string>
     <string name="notifications_use_lights">లైట్లు</string>
     <string name="notifications_use_vibration_summary">వైబ్రేషన్ ఉపయోగించండి మరియు హెడ్-అప్ నోటిఫికేషన్‌లను చూపుతుంది</string>
-    <string name="notifications_use_vibration">వైబ్రేషన్ &amp; హెడ్-అప్ నోటిఫికేషన్‌లు</string>
+    <string name="notifications_use_vibration">వైబ్రేషన్ &amp; హెడ్స్-అప్ నోటిఫికేషన్‌లు</string>
     <string name="refresh">రిఫ్రెష్ చేయి</string>
     <string name="cancel">రద్దు</string>
     <string name="deletion_confirmation">తొలగింపును నిర్ధారించండి</string>
@@ -369,12 +369,12 @@
     <string name="share">పంచుకొ</string>
     <string name="edit">సవరించు</string>
     <string name="received_files">స్వీకరించిన ఫైళ్లు</string>
-    <string name="choose_sharing_app">భాగస్వామ్యం చేయడానికి ఒక యాప్‌ని ఎంచుకోండి</string>
+    <string name="choose_sharing_app">భాగస్వామ్యం చేయండి…</string>
     <string name="preferences_reset_question">డిఫాల్ట్‌లకు రీసెట్ చేయాలా\?</string>
     <string name="preferences_reset">డిఫాల్ట్‌లకు రీసెట్ చేయండి</string>
     <string name="receive_files_success">ఫైళ్లు స్వీకరించబడ్డాయి</string>
-    <string name="receive_file_failure">\'%s\'ని స్వీకరించడం సాధ్యం కాలేదు</string>
-    <string name="send_file_failure">\'%s\'ని పంపడం సాధ్యం కాలేదు</string>
+    <string name="receive_file_failure">\"%s\"ని స్వీకరించడం సాధ్యం కాలేదు</string>
+    <string name="send_file_failure">\"%s\"ని పంపడం సాధ్యం కాలేదు</string>
     <string name="nickname_description">ఇతర క్లయింట్‌లలో కనిపించే పేరు</string>
     <string name="empty_list">జాబితా ఖాళీగా ఉంది</string>
     <string name="receive_file_success">%s స్వీకరించబడినది</string>
