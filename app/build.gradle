@@ -65,8 +65,8 @@ android {
         applicationId "org.monora.uprotocol.client.android"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 102
-        versionName "2.0.1"
+        versionCode 103
+        versionName "2.0.2"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
