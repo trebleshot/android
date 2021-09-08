@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="delete_files_question">
-        <item quantity="one">¿Desea eliminar este archivo\?</item>
-        <item quantity="other">¿Desea eliminar %d archivos\?</item>
+        <item quantity="one">¿Quiere eliminar este archivo\?</item>
+        <item quantity="other">¿Quiere eliminar %d archivos\?</item>
     </plurals>
     <plurals name="receive_files_success_summary">
-        <item quantity="one">%d archivo ha sido recibido</item>
-        <item quantity="other">%d archivos han sido recibidos</item>
+        <item quantity="one">Se recibió %d archivo</item>
+        <item quantity="other">Se recibieron %d archivos</item>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d archivo se ha seleccionado</item>
@@ -21,8 +21,8 @@
         <item quantity="other">%d conexiones</item>
     </plurals>
     <plurals name="receive_files_question">
-        <item quantity="one">¿Recibir este archivo\?</item>
-        <item quantity="other">¿Recibir %d archivos\?</item>
+        <item quantity="one">¿Quiere recibir este archivo\?</item>
+        <item quantity="other">¿Quiere recibir %d archivos\?</item>
     </plurals>
     <plurals name="files">
         <item quantity="one">%d archivo</item>
@@ -47,5 +47,21 @@
     <plurals name="text_devicesShared">
         <item quantity="one">Compartir individualmente</item>
         <item quantity="other">Compartiendo con %d dispositivos</item>
+    </plurals>
+    <plurals name="albums">
+        <item quantity="one">%d álbum</item>
+        <item quantity="other">%d álbumes</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="one">%d tarea</item>
+        <item quantity="other">%d tareas</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one">%d elemento</item>
+        <item quantity="other">%d elementos</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="one">Se seleccionó %d archivo</item>
+        <item quantity="other">Se seleccionaron %d archivos</item>
     </plurals>
 </resources>
