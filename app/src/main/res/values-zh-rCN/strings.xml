@@ -537,7 +537,7 @@
     <string name="light_theme">亮色</string>
     <string name="dark_theme">暗色</string>
     <string name="error_unknown_host">无法解析该主机的地址。</string>
-    <string name="crash_report_notice">TrebleShot 在之前经历了一次崩溃。</string>
+    <string name="crash_report_notice">TrebleShot 先前崩溃了。</string>
     <string name="starting">正在开始…</string>
     <string name="sender_finishing">正在完成…</string>
     <string name="sender_not_expecting">%s 没有发送任何文件</string>
