@@ -528,4 +528,14 @@
     <string name="follow_system_theme">跟随系统</string>
     <string name="ui_theme">主题</string>
     <string name="clients">客户端</string>
+    <string name="qr_code_image_notice">二维码将在此出现。</string>
+    <string name="generate_qr_code">生成二维码</string>
+    <string name="online_clients">在线的客户端</string>
+    <string name="show_all">显示全部</string>
+    <string name="split_apk">拆分 APK</string>
+    <string name="battery_saver_theme">由省电模式决定</string>
+    <string name="light_theme">亮色</string>
+    <string name="dark_theme">暗色</string>
+    <string name="error_unknown_host">无法解析该主机的地址。</string>
+    <string name="crash_report_notice">TrebleShot 在之前经历了一次崩溃。</string>
 </resources>
