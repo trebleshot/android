@@ -598,4 +598,16 @@
     <string name="credentials_mismatch">凭据不匹配</string>
     <string name="host_address_invalid_notice">请在此输入一个因特网地址。</string>
     <string name="set_up_network_notice">建立一个Wi-Fi热点或者连接到Wi-Fi</string>
+    <string name="pick_the_sender">选择发送方</string>
+    <string name="installing">安装中</string>
+    <string name="package_install_failure_unknown">由于未知原因，安装失败</string>
+    <string name="package_install_failure_storage">由于存储空间不足，安装失败</string>
+    <string name="package_install_incompatible">此软件包与设备不兼容</string>
+    <string name="package_install_invalid">此软件包无效或具有不同签名</string>
+    <string name="package_install_conflicted">此软件包与其他软件包冲突</string>
+    <string name="package_install_aborted">软件包安装已中止</string>
+    <string name="package_install_failure">无法安装此软件包</string>
+    <string name="package_install_success">软件包已安装</string>
+    <string name="app_icon">应用程序图标</string>
+    <string name="install_package">安装软件包</string>
 </resources>
