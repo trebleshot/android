@@ -610,4 +610,5 @@
     <string name="package_install_success">软件包已安装</string>
     <string name="app_icon">应用程序图标</string>
     <string name="install_package">安装软件包</string>
+    <string name="nothing_worked_rhetorical">都不起作用？</string>
 </resources>
