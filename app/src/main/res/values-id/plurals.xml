@@ -36,4 +36,16 @@
     <plurals name="text_itemSelected">
         <item quantity="other">%d berkas dipilih</item>
     </plurals>
+    <plurals name="albums">
+        <item quantity="other">%d album</item>
+    </plurals>
+    <plurals name="tasks">
+        <item quantity="other">%d tugas</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="other">%d item</item>
+    </plurals>
+    <plurals name="selected_files_summary">
+        <item quantity="other">%d file dipilih</item>
+    </plurals>
 </resources>
