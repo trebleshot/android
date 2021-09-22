@@ -566,4 +566,41 @@
     <string name="crash_report">Informe de cierre inesperado</string>
     <string name="clients">Clientes</string>
     <string name="remove_transfer_question">¿Quiere quitar la transferencia\?</string>
+    <string name="image_bucket_thumbnail">Miniatura del cubo de la imagen</string>
+    <string name="sender_wait_for_receiver_notice">Los receptores pueden elegirte aquí</string>
+    <string name="sender_accepted">Remitente aceptado</string>
+    <string name="receiver_pending">Elige a alguien que está a punto de enviar algo</string>
+    <string name="clear_storage_list">Limpiar lista de almacenamientos</string>
+    <string name="add_storage_access">Añadir acceso de almacenamiento…</string>
+    <string name="deny">Denegar</string>
+    <string name="invalidate">Invalidar</string>
+    <string name="error_communication_security_credentials">Credenciales inválidas (necesita emparejamiento)</string>
+    <string name="using_qr_code">Usando código QR</string>
+    <string name="error_no_activity_to_view">No se pudo encontrar una aplicación para abrir el contenido con</string>
+    <string name="granted">Permitido</string>
+    <string name="grant">Permitir</string>
+    <string name="change_picture">Cambiar imagen</string>
+    <string name="remove_picture">Eliminar foto</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="warning_permissions_not_accepted">Aún no has configurado los permisos.</string>
+    <string name="received_using_web_share">Recibido usando Compartir Web</string>
+    <string name="receiving_using_web_web_share">Recibiendo usando Compartir Web</string>
+    <string name="web_share_empty_notice">Comparte algo en la aplicación y vuelve aquí.</string>
+    <string name="sharing_on_web">Compartiendo en Web</string>
+    <string name="share_on_web">Compartir en Web</string>
+    <string name="completed">Completado</string>
+    <string name="outgoing">Extrovertida</string>
+    <string name="incoming">Entrante</string>
+    <string name="waiting_receiver_approval_notice">Esperando por la aprobación del receptor…</string>
+    <string name="wifi_password">Contraseña del Wi-Fi</string>
+    <string name="wifi_connection_notice">1- Abrir ajustes de Wi-Fi.
+\n
+\n2- Espera hasta que \"%s\" aparezca en la lista de redes Wi-Fi.
+\n
+\n3- Selecciónelo (%s) y pega la contraseña (%s).
+\n
+\n4- Regresa a la app después de una conexión exitosa.</string>
+    <string name="join_us">Únete a nosotros</string>
+    <string name="credentials_mismatch_notice">\"%s\" necesita una invalidación de credenciales para comunicarse.</string>
+    <string name="credentials_mismatch">Desajuste en las credenciales</string>
 </resources>
