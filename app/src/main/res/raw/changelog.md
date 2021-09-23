@@ -1,3 +1,9 @@
+## 2.0.3 Stable Release
+
+### Miscellaneous
+
+* Updated translations
+
 ## 2.0.2 Stable Release
 
 ### Miscellaneous
