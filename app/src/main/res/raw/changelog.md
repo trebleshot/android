@@ -1,3 +1,9 @@
+## 2.0.4 Stable Release
+
+### Fixes
+
+* Indonesian language won't display when applied system-wide
+
 ## 2.0.3 Stable Release
 
 ### Miscellaneous
